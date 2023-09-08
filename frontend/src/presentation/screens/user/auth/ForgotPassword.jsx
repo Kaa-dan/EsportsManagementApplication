@@ -16,7 +16,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { toast } from "react-toastify";
 // Initial form state for formik
 const INITIAL_FORM_STATE = {
   email: "",
@@ -24,9 +24,7 @@ const INITIAL_FORM_STATE = {
 
 // Form validation schema using Yup
 const FORM_VALIDATION = Yup.object().shape({
-  email: Yup.string()
-  .email("Invalid email")
-  .required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
 });
 
 const ForgotPassword = () => {
@@ -41,9 +39,10 @@ const ForgotPassword = () => {
 
       dispatch(setOtp(response.otp)); // Update the OTP in Redux state
       dispatch(setRegisterCredentials(response.user)); // Update user credentials in Redux state
+      toast(response.message)
       navigate("/forgot-password-otp"); // Navigate to the OTP verification page
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
@@ -51,22 +50,6 @@ const ForgotPassword = () => {
     <>
       <AuthComponent>
         <Container>
-          <Box height={35} />
-          <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-            <Avatar
-              sx={{
-                ml: "35px",
-                mb: "4px",
-                bgcolor: "#ffffff",
-              }}
-            >
-              <VideogameAssetOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h4">
-              forgot
-            </Typography>
-          </Box>
-          <Box height={35} />
           {/* Using formik */}
           <Formik
             initialValues={{ ...INITIAL_FORM_STATE }}

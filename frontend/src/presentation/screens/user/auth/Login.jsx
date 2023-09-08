@@ -2,9 +2,9 @@
 import AuthComponent from "../../../components/user/auth/Auth";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
+import GoogleButton from "../../../components/user/auth/GoogleButton";
 // importing mui components
 import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
 // importing from redux store
 import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
 import { setCredentials } from "../../../../application/slice/user/authSlice";
@@ -14,6 +14,7 @@ import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 // Initial form state for formik
 const INITIAL_FORM_STATE = {
@@ -23,16 +24,14 @@ const INITIAL_FORM_STATE = {
 
 // Form validation schema using Yup
 const FORM_VALIDATION = Yup.object().shape({
-  email: Yup.string()
-  .email("Invalid email")
-  .required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string()
-  .required("Required")
-  .min(8, "Password must be at least 8 characters")
-  .matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
-    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-  ),
+    .required("Required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])/,
+      "Password must contain at least one u letter and one special character"
+    ),
 });
 
 const Login = () => {
@@ -55,33 +54,18 @@ const Login = () => {
         email: values.email,
         password: values.password,
       }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      const { message, ...user } = res;
+      dispatch(setCredentials({ ...user }));
       navigate("/");
+      toast(message);
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
   return (
     <AuthComponent>
       <Container>
-        <Box height={35} />
-        <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-          <Avatar
-            sx={{
-              ml: "35px",
-              mb: "4px",
-              bgcolor: "#ffffff",
-            }}
-          >
-            <VideogameAssetOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Sign In
-          </Typography>
-        </Box>
-        <Box height={35} />
-
         {/* Using formik  */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}
@@ -102,7 +86,7 @@ const Login = () => {
                     variant="body1"
                     component="span"
                     onClick={() => {
-                      navigate("/frogot-password");
+                      navigate("/forgot-password");
                     }}
                     style={{
                       marginTop: "10px",
@@ -113,8 +97,11 @@ const Login = () => {
                   </Typography>
                 </Stack>
               </Grid>
-              <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                 <ButtonWrapper>Sign In</ButtonWrapper>
+              </Grid>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                <GoogleButton />
               </Grid>
               <Grid
                 item

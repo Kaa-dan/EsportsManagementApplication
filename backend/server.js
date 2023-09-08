@@ -2,23 +2,18 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import cookieParser from "cookie-parser";
-import cors from "cors" // Import the cors package
+import cors from "cors"; // Import the cors package
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import connectDB from "./config/db.js";
 const PORT = process.env.PORT || 5000;
-
-
-
-
 
 // Connecting to MongoDB
 connectDB();
 
 const app = express();
 
-
-const allowedOrigins = ["http://localhost:4000", ];
+const allowedOrigins = ["http://localhost:4000"];
 
 app.use(
   cors({
@@ -31,9 +26,6 @@ app.use(
     },
   })
 );
-
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,4 +45,4 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`server is running @${PORT}`);
-})
+});

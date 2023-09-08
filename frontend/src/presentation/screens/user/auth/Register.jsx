@@ -16,7 +16,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
+import { toast } from "react-toastify";
 // Initial form state for formik
 const INITIAL_FORM_STATE = {
   name: "",
@@ -47,6 +47,7 @@ const Register = () => {
   // Submit Handler for Registration
   const submitHandler = async (values) => {
     try {
+      console.log(values);
       // Generate OTP and store it in Redux state
       const response = await otpRegister({ email: values.email }).unwrap();
       dispatch(
@@ -56,13 +57,13 @@ const Register = () => {
           password: values.password,
         })
       );
-      console.log(response)
+      console.log(response);
       dispatch(setOtp(response.otp));
-
+      toast(response.message);
       // Navigate to the OTP verification page
-      navigate("/registe-otp");
+      navigate("/register-otp");
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
@@ -70,22 +71,6 @@ const Register = () => {
     <>
       <AuthComponent>
         <Container>
-          <Box height={35} />
-          <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-            <Avatar
-              sx={{
-                ml: "35px",
-                mb: "4px",
-                bgcolor: "#ffffff",
-              }}
-            >
-              <VideogameAssetOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h4">
-              Register
-            </Typography>
-          </Box>
-          <Box height={35} />
           <Formik
             initialValues={{ ...INITIAL_FORM_STATE }}
             validationSchema={FORM_VALIDATION}
@@ -106,7 +91,7 @@ const Register = () => {
                     type="password"
                   />
                 </Grid>
-                <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                   <ButtonWrapper>Register</ButtonWrapper>
                 </Grid>
                 <Grid

@@ -8,6 +8,9 @@ import HomePage from "./presentation/screens/user/home/Home";
 import RegisterOtp from "./presentation/screens/user/auth/RegisterOtp";
 import ForgotPasswordOtp from "./presentation/screens/user/auth/ForgotPasswordOtp";
 import ResetPassword from "./presentation/screens/user/auth/ResetPassword";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function App() {
   const [theme, colorMode] = useMode();
 
@@ -20,14 +23,15 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/registe-otp" element={<RegisterOtp />} />
-            <Route path="/frogot-password" element={<ForgotPassword />} />
+            <Route path="/register-otp" element={<RegisterOtp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/forgot-password-otp" element={<ForgotPasswordOtp />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             {/* Define other routes here */}
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
+      < ToastContainer theme="dark"/>
     </ColorModeCotext.Provider>
   );
 }

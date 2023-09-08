@@ -15,6 +15,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 // Define the initial form state and validation schema
 const INITIAL_FORM_STATE = {
@@ -43,31 +44,17 @@ const ResetPassword = () => {
         user,
       });
       dispatch(clearRegisterDetails());
+      console.log(responce)
+      toast(responce.data.message);
       navigate("/login");
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
   return (
     <AuthComponent>
       <Container>
-        <Box height={35} />
-        <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-          <Avatar
-            sx={{
-              ml: "35px",
-              mb: "4px",
-              bgcolor: "#ffffff",
-            }}
-          >
-            <VideogameAssetOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Reset
-          </Typography>
-        </Box>
-        <Box height={35} />
         {/* Using Formik for form handling */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}

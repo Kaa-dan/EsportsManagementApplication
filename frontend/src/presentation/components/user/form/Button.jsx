@@ -7,11 +7,11 @@ const ButtonWrapper = ({ children, ...otherProps }) => {
     submitForm();
   };
   const configButton = {
-    ...otherProps,
     variant: "contained",
     color: "primary",
     fullWidth: true,
     onClick: handleSubmit,
+    ...otherProps,
   };
   return <Button {...configButton}>{children}</Button>;
 };

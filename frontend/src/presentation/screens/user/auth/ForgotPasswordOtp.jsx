@@ -17,7 +17,7 @@ import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
+import { toast } from "react-toastify";
 // Define the initial form state and validation schema
 const INITIAL_FORM_STATE = {
   otp: "",
@@ -56,43 +56,29 @@ const ForgotPasswordOtp = () => {
       console.log(responce);
       dispatch(setOtp(responce.otp));
       setTimer(10);
+      toast(responce.message);
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
   // Handler for form submission
   const submitHandler = async (values) => {
     try {
-      console.log(otpValues)
+      console.log(otpValues);
       // Check if entered OTP matches stored OTP
       if (otpValues === Number(values.otp)) {
+        toast("Enter your new password");
         navigate("/reset-password");
       }
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
   return (
     <AuthComponent>
       <Container>
-        <Box height={35} />
-        <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-          <Avatar
-            sx={{
-              ml: "35px",
-              mb: "4px",
-              bgcolor: "#ffffff",
-            }}
-          >
-            <VideogameAssetOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Verify
-          </Typography>
-        </Box>
-        <Box height={35} />
         {/* Using Formik for form handling */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}

@@ -1,7 +1,9 @@
 import asyncHandler from "express-async-handler";
 import User from "../model/userModel.js";
 import generateToken from "../utils/generatToken.js";
+import googleOAuth from "../config/googleOAuth.js";
 import { sendEmail } from "../middlewares/otpValidation.js";
+
 // @desc  Auth User/set token
 // route  POST  /api/users/login
 const loginUser = asyncHandler(async (req, res) => {
@@ -27,6 +29,7 @@ const loginUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      message: "Logged in successfully",
     });
   } else {
     res.status(401);
@@ -70,6 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.userName,
       email: user.email,
+      message: "Registration succesfull",
     });
   } else {
     res.status(400);
@@ -77,44 +81,80 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc  Sent Otp
-// route  POST  /api/users/sentOtp
-// const sentOtpRegister = asyncHandler(async (req, res) => {
-//   const email = req.body.email;
-//   // Input Validation
-//   if (!email) {
-//     res.status(400);
-//     throw new Error("Email is required.");
-//   }
+// @desc  Register and Login user using googleOauth
+// route  POST /api/users/google-auth
+const googleAuth = asyncHandler(async (req, res) => {
+  try {
+    const { clientId, credential } = req.body;
+    console.log("nithin");
+    //decoding token
+    const response = await googleOAuth(clientId, credential);
 
-//   // Generate and send OTP
-//   const otp = sendEmail(email,res)
-//   if(otp){
-//  // Logging
-//  console.log(`OTP sent to ${email}: ${otp}`);
+    console.log(response);
+    const email = response.email;
 
-//  return res.status(200).json(otp);
-//   }else{
-//     throw new Error("Check your email")
-//   }
+    const existingUser = await User.findOne({ email });
 
-// });
+    if (existingUser) {
+      // Generate and set JWT token
+      generateToken(res, existingUser._id);
+
+      // Logging
+      console.log(
+        `User logged in: ${existingUser.name}, ${existingUser.email}`
+      );
+
+      res.status(201).json({
+        _id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+      });
+    } else if (!existingUser) {
+      // Create a new user
+      const newUser = await User.create({
+        name: response.name,
+        email: response.email,
+        password: response.email,
+      });
+      if (newUser) {
+        // Generate and set JWT token
+        generateToken(res, newUser._id);
+
+        // Logging
+        console.log(`New User registered: ${newUser.name}, ${newUser.email}`);
+
+        res.status(201).json({
+          _id: newUser._id,
+          name: newUser.userName,
+          email: newUser.email,
+          message: "your password will be your email address",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+// @desc  Senting OTP for registration
+// route  POST /api/users/sentOtp
 const sentOtpRegister = asyncHandler(async (req, res) => {
   const email = req.body.email;
-
   try {
     // Input Validation
     if (!email) {
-      res.status(400).json({ message: "Email is required." });
-      return;
+      res.status(400);
+      throw new Error("Invalid user data");
+      // res.status(400).json({ message: "Email is required." });
+      // return;
     }
 
     // Generate and send OTP
     const otp = await sendEmail(email, res);
-    console.log('sendEmail', otp );
+    console.log("sendEmail", otp);
     if (otp) {
       // Send a success response without revealing the OTP
-      res.status(200).json({ message: "OTP sent to the email address.",otp });
+      res.status(200).json({ message: "OTP sent to the email address.", otp });
 
       // Logging
       console.log(`OTP sent to ${email}`);
@@ -149,7 +189,11 @@ const sentOtpForgotPasword = asyncHandler(async (req, res) => {
     // Logging
     console.log(`OTP sent for password reset to ${email}: ${otp}`);
 
-    return res.status(200).json({ otp, user });
+    return res.status(200).json({
+      otp,
+      user,
+      message: `OTP sent for password reset to ${email}: ${otp}`,
+    });
   } else {
     res.status(400);
     throw new Error("Invalid user data");
@@ -178,7 +222,11 @@ const changePassword = asyncHandler(async (req, res) => {
     // Logging
     console.log(`Password changed for user: ${user.name}, ${user.email}`);
 
-    res.status(200).json({ user });
+    const message = `Password changed for user: ${user.name}, ${user.email}`;
+    res.status(200).json({
+      user,
+      message,
+    });
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -214,4 +262,5 @@ export {
   sentOtpForgotPasword,
   sentOtpRegister,
   changePassword,
+  googleAuth,
 };

@@ -7,6 +7,7 @@ import {
   changePassword,
   sentOtpForgotPasword,
   sentOtpRegister,
+  googleAuth
 } from "../controllers/userController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -28,4 +29,6 @@ router.post("/sentOtpForgotpassword", sentOtpForgotPasword);
 // Update Password (PATCH)
 router.patch("/updatePassword", changePassword);
 
+//Goole Login and Register (POST)
+router.post("/google-auth",googleAuth)
 export default router;

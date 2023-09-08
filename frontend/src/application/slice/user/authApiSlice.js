@@ -55,15 +55,24 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    //Google Authentication for login and register
+    googleAuth: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/google-auth`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 // Export hooks for each mutation endpoint for use in components
 export const {
-  useLoginMutation,              // Hook for the login mutation
-  useLogoutMutation,             // Hook for the logout mutation
-  useRegisterMutation,           // Hook for the register mutation
-  useOtpRegisterMutation,        // Hook for the OTP registration mutation
-  useOtpForgotPasswordMutation,  // Hook for the OTP for forgot password mutation
-  useUpdatePasswordMutation,     // Hook for the update password mutation
+  useLoginMutation, // Hook for the login mutation
+  useLogoutMutation, // Hook for the logout mutation
+  useRegisterMutation, // Hook for the register mutation
+  useOtpRegisterMutation, // Hook for the OTP registration mutation
+  useOtpForgotPasswordMutation, // Hook for the OTP for forgot password mutation
+  useUpdatePasswordMutation, // Hook for the update password mutation
+  useGoogleAuthMutation, //Hook for google login and register
 } = authApiSlice;

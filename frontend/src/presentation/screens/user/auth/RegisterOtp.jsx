@@ -19,7 +19,7 @@ import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
+import { toast } from "react-toastify";
 // Initial form state for formik
 const INITIAL_FORM_STATE = {
   otp: "",
@@ -41,7 +41,7 @@ const RegisterOtp = () => {
   const { user } = useSelector((state) => state.auth); //Registering User data from Redux state
   const otpValues = useSelector((state) => state.auth.otp); // OTP value from Redux state
   const [timer, setTimer] = useState(10); //for Otp timer
-
+  const state = useSelector((state) => state.auth);
   useEffect(() => {
     //Setting  Otp timer
     let newTimer = setInterval(() => {
@@ -64,11 +64,11 @@ const RegisterOtp = () => {
   const resendHandler = async () => {
     try {
       const responce = await otpRegister({ email: user.email }).unwrap(); // Generate and resend OTP
-      console.log(responce);
-      dispatch(setOtp(responce)); // Update the OTP in Redux state
+      dispatch(setOtp(responce.otp)); // Update the OTP in Redux state
       setTimer(10);
+      toast(responce.message);
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
@@ -82,36 +82,22 @@ const RegisterOtp = () => {
           email: user.email,
           password: user.password,
         }).unwrap(); // Register the user
-        dispatch(setCredentials({ ...responce })); // Update user credentials in Redux state
+        const { message, ...user } = responce;
+        dispatch(setCredentials({ ...user })); // Update user credentials in Redux state
         dispatch(clearRegisterDetails()); // Clear registration details from Redux state
+        toast(message);
         navigate("/"); // Navigate to the home page
       } else {
-        console.log("OTP did not match");
+        toast("OTP did not match");
       }
     } catch (err) {
-      console.log(err?.data?.message || err.error);
+      toast(err?.data?.message || err.error);
     }
   };
 
   return (
     <AuthComponent>
       <Container>
-        <Box height={35} />
-        <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
-          <Avatar
-            sx={{
-              ml: "35px",
-              mb: "4px",
-              bgcolor: "#ffffff",
-            }}
-          >
-            <VideogameAssetOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Verify
-          </Typography>
-        </Box>
-        <Box height={35} />
         {/* Using formik */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}
