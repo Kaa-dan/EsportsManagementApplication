@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+
+// Define the User Schema
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -9,7 +11,7 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, // Ensures email is unique for each user
     },
     password: {
       type: String,
@@ -17,24 +19,34 @@ const userSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // Adds createdAt and updatedAt timestamps to documents
   }
 );
 
-// Hashing password before saving to the db
+// Hashing password before saving to the database
 userSchema.pre("save", async function (next) {
+  // Only hash the password if it has been modified (or is new)
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
+
+  // Generate a salt with a complexity of 10
   const salt = await bcrypt.genSalt(10);
+
+  // Hash the password with the salt
   this.password = await bcrypt.hash(this.password, salt);
+
+  // Continue with the save operation
+  next();
 });
 
-// comparing passwords 
+// Comparing passwords during login
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  // Compare the entered password with the stored hashed password
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("Fans", userSchema);
+// Create the User model from the schema
+const User = mongoose.model("User", userSchema);
 
 export default User;

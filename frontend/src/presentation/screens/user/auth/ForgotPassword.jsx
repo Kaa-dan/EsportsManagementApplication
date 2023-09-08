@@ -1,24 +1,55 @@
-import {
-  Box,
-  Grid,
-  Button,
-  TextField,
-  Typography,
-  Container,
-  Avatar,
-  Stack,
-} from "@mui/material";
+// Importing custom components
+import AuthComponent from "../../../components/user/auth/Auth";
+import ButtonWrapper from "../../../components/user/form/Button";
+import TextFieldWrapper from "../../../components/user/form/Textfield";
 
+// Importing mui components
+import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
 import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
 
+// Importing form redux store
+import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
+import { setRegisterCredentials } from "../../../../application/slice/user/authSlice";
+import { setOtp } from "../../../../application/slice/user/authSlice";
+
+import * as Yup from "yup";
+import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
-import Login from "../../../components/user/login/Login";
+import { useDispatch, useSelector } from "react-redux";
+
+// Initial form state for formik
+const INITIAL_FORM_STATE = {
+  email: "",
+};
+
+// Form validation schema using Yup
+const FORM_VALIDATION = Yup.object().shape({
+  email: Yup.string()
+  .email("Invalid email")
+  .required("Required"),
+});
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Redux dispatch function
+  const navigate = useNavigate(); // Hook for navigation
+  const [otpFrogotPassword] = useOtpForgotPasswordMutation(); // Mutation for sending OTP
+  // Submit Handler for sending OTP
+  const submitHandler = async (values) => {
+    try {
+      const email = values.email;
+      const response = await otpFrogotPassword({ email }).unwrap(); // Send OTP request
+
+      dispatch(setOtp(response.otp)); // Update the OTP in Redux state
+      dispatch(setRegisterCredentials(response.user)); // Update user credentials in Redux state
+      navigate("/forgot-password-otp"); // Navigate to the OTP verification page
+    } catch (err) {
+      console.log(err?.data?.message || err.error);
+    }
+  };
+
   return (
     <>
-      <Login>
+      <AuthComponent>
         <Container>
           <Box height={35} />
           <Box sx={{ position: "relative", top: "50%", left: "37%" }}>
@@ -32,106 +63,91 @@ const ForgotPassword = () => {
               <VideogameAssetOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h4">
-              Reset
+              forgot
             </Typography>
           </Box>
           <Box height={35} />
-          <Grid container spacing={1}>
-            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                label="Username"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-              <TextField
-                required
-                fullWidth
-                id="password"
-                label="Password"
-                name="password"
-                type="password"
-                autoComplete="password"
-              />
-            </Grid>
-            <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-              <Stack direction="row" spacing={2}>
-                {/* <FormControlLabel
-                            sx={{ width: "60%" }}
-                            onClick={() => setRemember(!remember)}
-                            control={<Checkbox checked={remember} />}
-                            label="remember me"
-                          /> */}
+          {/* Using formik */}
+          <Formik
+            initialValues={{ ...INITIAL_FORM_STATE }}
+            validationSchema={FORM_VALIDATION}
+            onSubmit={submitHandler}
+          >
+            <Form>
+              <Grid container spacing={1}>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                  <TextFieldWrapper label="Email" name="email" />
+                </Grid>
 
-                <Typography
-                  variant="body1"
-                  component="span"
-                  onClick={() => {
-                    navigate("/reset-password");
-                  }}
-                  style={{
-                    marginTop: "10px",
-                    cursor: "pointer",
-                  }}
-                ></Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                size="large"
-                sx={{
-                  mt: "10px",
-                  mr: "20px",
-                  borderRadius: "28",
-                  color: "#ffffff",
-                  minWidth: "100px",
-                  backgroundColor: "purple",
-                }}
-              >
-                Sent OTP
-              </Button>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sx={{
-                ml: "3em",
-                mr: "3em",
-              }}
-            >
-              <Stack direction="row" spacing={2}>
-                <Typography
-                  variant="body1"
-                  component="span"
-                  style={{
-                    marginTop: "10px",
-                  }}
-                >
-                  Not Registerd Yet?{" "}
-                  <span
-                    style={{
-                      color: "#beb4fb",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      navigate("/register");
+                <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
+                  <Stack direction="row" spacing={2}>
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      onClick={() => {
+                        navigate("/reset-password");
+                      }}
+                      style={{
+                        marginTop: "10px",
+                        cursor: "pointer",
+                      }}
+                    ></Typography>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+                  <ButtonWrapper
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{
+                      mt: "10px",
+                      mr: "20px",
+                      borderRadius: "28",
+                      color: "#ffffff",
+                      minWidth: "100px",
+                      backgroundColor: "purple",
                     }}
                   >
-                    Create an Account
-                  </span>
-                </Typography>
-              </Stack>
-            </Grid>
-          </Grid>
+                    Sent OTP
+                  </ButtonWrapper>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    ml: "3em",
+                    mr: "3em",
+                  }}
+                >
+                  <Stack direction="row" spacing={2}>
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      style={{
+                        marginTop: "10px",
+                      }}
+                    >
+                      Not registered yet?{" "}
+                      <span
+                        style={{
+                          color: "#beb4fb",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          navigate("/register");
+                        }}
+                      >
+                        Create an Account
+                      </span>
+                    </Typography>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Form>
+          </Formik>
         </Container>
-      </Login>
+      </AuthComponent>
     </>
   );
 };

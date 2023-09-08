@@ -1,62 +1,49 @@
-// importing custom components
+// Importing custom components
 import AuthComponent from "../../../components/user/auth/Auth";
-import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
-// importing mui components
+import TextFieldWrapper from "../../../components/user/form/Textfield";
+
+// Importing components from MUI (Material-UI)
 import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
 import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
-// importing from redux store
-import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
-import { setCredentials } from "../../../../application/slice/user/authSlice";
+
+// Importing from Redux store
+import { useUpdatePasswordMutation } from "../../../../application/slice/user/authApiSlice";
+import { clearRegisterDetails } from "../../../../application/slice/user/authSlice";
 
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// Initial form state for formik
+// Define the initial form state and validation schema
 const INITIAL_FORM_STATE = {
-  email: "",
   password: "",
 };
-
-// Form validation schema using Yup
 const FORM_VALIDATION = Yup.object().shape({
-  email: Yup.string()
-  .email("Invalid email")
-  .required("Required"),
   password: Yup.string()
-  .required("Required")
-  .min(8, "Password must be at least 8 characters")
-  .matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
-    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-  ),
+    .required("Required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    ),
 });
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
+  const [updatePassword] = useUpdatePasswordMutation();
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [loginApi, { isLoading }] = useLoginMutation();
-  const { userInfo } = useSelector((state) => state.auth);
-
-  // Use Effect to check if the user is already logged in, if so, redirect to home page
-  useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [navigate, userInfo]);
-
-  // Submit Handler for Login
+  // Submit Handler for password change
   const submitHandler = async (values) => {
     try {
-      const res = await loginApi({
-        email: values.email,
+      const responce = await updatePassword({
         password: values.password,
-      }).unwrap();
-      dispatch(setCredentials({ ...res }));
-      navigate("/");
+        user,
+      });
+      dispatch(clearRegisterDetails());
+      navigate("/login");
     } catch (err) {
       console.log(err?.data?.message || err.error);
     }
@@ -77,12 +64,11 @@ const Login = () => {
             <VideogameAssetOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h4">
-            Sign In
+            Reset
           </Typography>
         </Box>
         <Box height={35} />
-
-        {/* Using formik  */}
+        {/* Using Formik for form handling */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}
           validationSchema={FORM_VALIDATION}
@@ -90,31 +76,15 @@ const Login = () => {
         >
           <Form>
             <Grid container spacing={1}>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="email" label="Email" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="password" label="Password" />
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mt: "50px" }}>
+                <TextFieldWrapper name="password" label="New password" />
               </Grid>
               <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                <Stack direction="row" spacing={2}>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    onClick={() => {
-                      navigate("/frogot-password");
-                    }}
-                    style={{
-                      marginTop: "10px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Forgot password?
-                  </Typography>
-                </Stack>
+                <Stack height={50} direction="row" spacing={2}></Stack>
               </Grid>
               <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                <ButtonWrapper>Sign In</ButtonWrapper>
+                {/* Button for form submission */}
+                <ButtonWrapper>Confirm</ButtonWrapper>
               </Grid>
               <Grid
                 item
@@ -155,4 +125,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

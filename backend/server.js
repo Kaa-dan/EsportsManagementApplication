@@ -18,7 +18,7 @@ connectDB();
 const app = express();
 
 
-const allowedOrigins = ["http://localhost:3000", "https://yourfrontend.com"];
+const allowedOrigins = ["http://localhost:4000", ];
 
 app.use(
   cors({
@@ -41,7 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // configuring user routes
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.json("server started");

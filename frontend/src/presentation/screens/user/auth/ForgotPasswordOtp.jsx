@@ -1,62 +1,74 @@
-// importing custom components
+// Importing custom components
 import AuthComponent from "../../../components/user/auth/Auth";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
-// importing mui components
+
+// Importing MUI (Material-UI) components
 import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
 import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
-// importing from redux store
-import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
-import { setCredentials } from "../../../../application/slice/user/authSlice";
+
+// Importing from Redux store
+import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
+import { setOtp } from "../../../../application/slice/user/authSlice";
 
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
+
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
-// Initial form state for formik
+// Define the initial form state and validation schema
 const INITIAL_FORM_STATE = {
-  email: "",
-  password: "",
+  otp: "",
 };
-
-// Form validation schema using Yup
 const FORM_VALIDATION = Yup.object().shape({
-  email: Yup.string()
-  .email("Invalid email")
-  .required("Required"),
-  password: Yup.string()
-  .required("Required")
-  .min(8, "Password must be at least 8 characters")
-  .matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
-    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-  ),
+  otp: Yup.string()
+    .required("Required")
+    .matches(/^\d{4}$/, "OTP must be a 4-digit number"),
 });
 
-const Login = () => {
+const ForgotPasswordOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [loginApi, { isLoading }] = useLoginMutation();
-  const { userInfo } = useSelector((state) => state.auth);
-
-  // Use Effect to check if the user is already logged in, if so, redirect to home page
+  const [otpFrogotPassword] = useOtpForgotPasswordMutation();
+  const otpValues = useSelector((state) => state.auth.otp);
+  const { user } = useSelector((state) => state.auth);
+  const [timer, setTimer] = useState(10);
   useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [navigate, userInfo]);
+    //Setting  Otp timer
+    let newTimer = setInterval(() => {
+      if (timer > 0) {
+        setTimer((prevTimer) => prevTimer - 1);
+      } else {
+        clearInterval(newTimer);
+      }
+    }, 1000);
 
-  // Submit Handler for Login
+    return () => {
+      clearInterval(newTimer);
+    };
+  }, [navigate, timer]);
+  // Handler to resend OTP
+  const resendHandler = async () => {
+    try {
+      const responce = await otpFrogotPassword({ email: user.email }).unwrap();
+      console.log(responce);
+      dispatch(setOtp(responce.otp));
+      setTimer(10);
+    } catch (err) {
+      console.log(err?.data?.message || err.error);
+    }
+  };
+
+  // Handler for form submission
   const submitHandler = async (values) => {
     try {
-      const res = await loginApi({
-        email: values.email,
-        password: values.password,
-      }).unwrap();
-      dispatch(setCredentials({ ...res }));
-      navigate("/");
+      console.log(otpValues)
+      // Check if entered OTP matches stored OTP
+      if (otpValues === Number(values.otp)) {
+        navigate("/reset-password");
+      }
     } catch (err) {
       console.log(err?.data?.message || err.error);
     }
@@ -77,12 +89,11 @@ const Login = () => {
             <VideogameAssetOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h4">
-            Sign In
+            Verify
           </Typography>
         </Box>
         <Box height={35} />
-
-        {/* Using formik  */}
+        {/* Using Formik for form handling */}
         <Formik
           initialValues={{ ...INITIAL_FORM_STATE }}
           validationSchema={FORM_VALIDATION}
@@ -91,30 +102,39 @@ const Login = () => {
           <Form>
             <Grid container spacing={1}>
               <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="email" label="Email" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="password" label="Password" />
+                <TextFieldWrapper name="otp" label="OTP" />
               </Grid>
               <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
                 <Stack direction="row" spacing={2}>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    onClick={() => {
-                      navigate("/frogot-password");
-                    }}
-                    style={{
-                      marginTop: "10px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Forgot password?
-                  </Typography>
+                  {timer ? (
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      style={{
+                        marginTop: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Resend OTP in 00:{timer}
+                    </Typography>
+                  ) : (
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      onClick={resendHandler}
+                      style={{
+                        marginTop: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Resend OTP
+                    </Typography>
+                  )}
                 </Stack>
               </Grid>
               <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                <ButtonWrapper>Sign In</ButtonWrapper>
+                {/* Button for form submission */}
+                <ButtonWrapper>Confirm</ButtonWrapper>
               </Grid>
               <Grid
                 item
@@ -155,4 +175,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPasswordOtp;

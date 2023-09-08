@@ -1,15 +1,15 @@
 import bgVideo from "../../../../assets/User/login/Login.mp4";
 
 import { Box, Grid, ThemeProvider, createTheme } from "@mui/material";
-
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
-const Login = ({ children }) => {
+const Auth = ({ children }) => {
   return (
     <>
+     
       <div
         style={{
           backgroundSize: "cover",
@@ -31,6 +31,7 @@ const Login = ({ children }) => {
         >
           <source src={bgVideo} type="video/mp4" />
         </video>
+
         <Box
           sx={{
             position: "absolute",
@@ -63,4 +64,4 @@ const Login = ({ children }) => {
   );
 };
 
-export default Login;
+export default Auth;

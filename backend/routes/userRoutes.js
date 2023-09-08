@@ -1,9 +1,31 @@
 import express from "express";
 const router = express.Router();
-import { loginUser, registerUser } from "../controllers/userController.js";
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+  changePassword,
+  sentOtpForgotPasword,
+  sentOtpRegister,
+} from "../controllers/userController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
+// Login User (POST)
 router.post("/login", loginUser);
+
+// Register User (POST)
 router.post("/register", registerUser);
+
+// Logout User (POST)
+router.post("/logout", logoutUser);
+
+// Send OTP for Registration (POST)
+router.post("/sentOtp", sentOtpRegister);
+
+// Send OTP for Forgot Password (POST)
+router.post("/sentOtpForgotpassword", sentOtpForgotPasword);
+
+// Update Password (PATCH)
+router.patch("/updatePassword", changePassword);
 
 export default router;
