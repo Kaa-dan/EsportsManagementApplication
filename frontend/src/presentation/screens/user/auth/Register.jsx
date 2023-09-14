@@ -4,8 +4,8 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // importing mui components
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import { Grid, Typography, Container,  Stack } from "@mui/material";
+
 
 // importing from redux store
 import { setOtp } from "../../../../application/slice/user/authSlice";
@@ -61,7 +61,7 @@ const Register = () => {
       dispatch(setOtp(response.otp));
       toast(response.message);
       // Navigate to the OTP verification page
-      navigate("/register-otp");
+      navigate("/auth/register-otp");
     } catch (err) {
       toast(err?.data?.message || err.error);
     }
@@ -117,7 +117,7 @@ const Register = () => {
                           cursor: "pointer",
                         }}
                         onClick={() => {
-                          navigate("/login");
+                          navigate("/auth/login");
                         }}
                       >
                         Go to Sign in

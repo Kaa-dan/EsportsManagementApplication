@@ -4,8 +4,8 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 
 // Importing MUI (Material-UI) components
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import {  Grid, Typography, Container,  Stack } from "@mui/material";
+
 
 // Importing from Redux store
 import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -69,7 +69,7 @@ const ForgotPasswordOtp = () => {
       // Check if entered OTP matches stored OTP
       if (otpValues === Number(values.otp)) {
         toast("Enter your new password");
-        navigate("/reset-password");
+        navigate("/auth/reset-password");
       }
     } catch (err) {
       toast(err?.data?.message || err.error);
@@ -145,7 +145,7 @@ const ForgotPasswordOtp = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate("/register");
+                        navigate("/auth/register");
                       }}
                     >
                       Create an Account

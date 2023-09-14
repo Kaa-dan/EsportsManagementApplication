@@ -7,8 +7,10 @@ import {
   changePassword,
   sentOtpForgotPasword,
   sentOtpRegister,
-  googleAuth
-} from "../controllers/userController.js";
+  googleAuth,
+} from "../controllers/authController.js";
+import { updateProfile } from "../controllers/fansController.js";
+import upload from "../middlewares/multer.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 // Login User (POST)
@@ -30,5 +32,10 @@ router.post("/sentOtpForgotpassword", sentOtpForgotPasword);
 router.patch("/updatePassword", changePassword);
 
 //Goole Login and Register (POST)
-router.post("/google-auth",googleAuth)
+router.post("/google-auth", googleAuth);
+
+//profile update
+
+router.post("/profile", upload.single("profilePhoto"), updateProfile);
+
 export default router;

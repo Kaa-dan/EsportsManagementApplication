@@ -4,6 +4,7 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import cors from "cors"; // Import the cors package
 import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import connectDB from "./config/db.js";
 const PORT = process.env.PORT || 5000;
@@ -34,6 +35,7 @@ app.use(cookieParser());
 
 // configuring user routes
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.json("server started");

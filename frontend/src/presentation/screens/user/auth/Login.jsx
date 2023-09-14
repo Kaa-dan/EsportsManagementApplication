@@ -4,7 +4,7 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 import GoogleButton from "../../../components/user/auth/GoogleButton";
 // importing mui components
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
+import { Grid, Typography, Container, Stack } from "@mui/material";
 // importing from redux store
 import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
 import { setCredentials } from "../../../../application/slice/user/authSlice";
@@ -41,22 +41,30 @@ const Login = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   // Use Effect to check if the user is already logged in, if so, redirect to home page
-  useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [navigate, userInfo]);
+  // useEffect(() => {
+  
+  // }, [navigate, userInfo]);
 
   // Submit Handler for Login
   const submitHandler = async (values) => {
     try {
+     
       const res = await loginApi({
         email: values.email,
         password: values.password,
       }).unwrap();
       const { message, ...user } = res;
       dispatch(setCredentials({ ...user }));
-      navigate("/");
+      console.log(res)
+      
+      if (user.role === "admin") {
+        navigate("/admin/dashboard");
+
+        console.log(user.role)
+      } else {
+        console.log("user");
+        navigate("/");
+      }
       toast(message);
     } catch (err) {
       toast(err?.data?.message || err.error);
@@ -86,7 +94,7 @@ const Login = () => {
                     variant="body1"
                     component="span"
                     onClick={() => {
-                      navigate("/forgot-password");
+                      navigate("/auth/forgot-password");
                     }}
                     style={{
                       marginTop: "10px",
@@ -126,7 +134,7 @@ const Login = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate("/register");
+                        navigate("/auth/register");
                       }}
                     >
                       Create an Account

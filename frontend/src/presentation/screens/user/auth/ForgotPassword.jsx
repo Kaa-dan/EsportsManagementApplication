@@ -4,8 +4,13 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // Importing mui components
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import {
+  Box,
+  Grid,
+  Typography,
+  Container,
+  Stack,
+} from "@mui/material";
 
 // Importing form redux store
 import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -30,17 +35,17 @@ const FORM_VALIDATION = Yup.object().shape({
 const ForgotPassword = () => {
   const dispatch = useDispatch(); // Redux dispatch function
   const navigate = useNavigate(); // Hook for navigation
-  const [otpFrogotPassword] = useOtpForgotPasswordMutation(); // Mutation for sending OTP
+  const [otpForgotPassword] = useOtpForgotPasswordMutation(); // Mutation for sending OTP
   // Submit Handler for sending OTP
   const submitHandler = async (values) => {
     try {
       const email = values.email;
-      const response = await otpFrogotPassword({ email }).unwrap(); // Send OTP request
+      const response = await otpForgotPassword({ email }).unwrap(); // Send OTP request
 
       dispatch(setOtp(response.otp)); // Update the OTP in Redux state
       dispatch(setRegisterCredentials(response.user)); // Update user credentials in Redux state
-      toast(response.message)
-      navigate("/forgot-password-otp"); // Navigate to the OTP verification page
+      toast(response.message);
+      navigate("/auth/forgot-password-otp"); // Navigate to the OTP verification page
     } catch (err) {
       toast(err?.data?.message || err.error);
     }
@@ -63,37 +68,10 @@ const ForgotPassword = () => {
                 </Grid>
 
                 <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                  <Stack direction="row" spacing={2}>
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      onClick={() => {
-                        navigate("/reset-password");
-                      }}
-                      style={{
-                        marginTop: "10px",
-                        cursor: "pointer",
-                      }}
-                    ></Typography>
-                  </Stack>
+                  
                 </Grid>
-                <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                  <ButtonWrapper
-                    type="submit"
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    sx={{
-                      mt: "10px",
-                      mr: "20px",
-                      borderRadius: "28",
-                      color: "#ffffff",
-                      minWidth: "100px",
-                      backgroundColor: "purple",
-                    }}
-                  >
-                    Sent OTP
-                  </ButtonWrapper>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                  <ButtonWrapper>Sent OTP</ButtonWrapper>
                 </Grid>
                 <Grid
                   item
@@ -118,7 +96,7 @@ const ForgotPassword = () => {
                           cursor: "pointer",
                         }}
                         onClick={() => {
-                          navigate("/register");
+                          navigate("/auth/register");
                         }}
                       >
                         Create an Account

@@ -4,8 +4,7 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 
 // importing mui components
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import { Grid, Typography, Container, Stack } from "@mui/material";
 
 // importing from the redux store
 import { useRegisterMutation } from "../../../../application/slice/user/authApiSlice";
@@ -41,7 +40,6 @@ const RegisterOtp = () => {
   const { user } = useSelector((state) => state.auth); //Registering User data from Redux state
   const otpValues = useSelector((state) => state.auth.otp); // OTP value from Redux state
   const [timer, setTimer] = useState(10); //for Otp timer
-  const state = useSelector((state) => state.auth);
   useEffect(() => {
     //Setting  Otp timer
     let newTimer = setInterval(() => {
@@ -75,17 +73,26 @@ const RegisterOtp = () => {
   // Submit Handler for OTP verification and registration
   const submitHandler = async (values) => {
     try {
+      console.log(otpValues);
+
       if (otpValues === Number(values.otp)) {
         // If the entered OTP matches the one in Redux state
+        // const responce = await register({
+        //   name: user.name,
+        //   email: user.email,
+        //   password: user.password,
+        // }).unwrap(); // Register the user
         const responce = await register({
           name: user.name,
           email: user.email,
           password: user.password,
-        }).unwrap(); // Register the user
-        const { message, ...user } = responce;
+        });
+        console.log("responce", responce);
+        console.log(responce.data.message);
+        // const { message, ...user } = responce;
         dispatch(setCredentials({ ...user })); // Update user credentials in Redux state
         dispatch(clearRegisterDetails()); // Clear registration details from Redux state
-        toast(message);
+        toast(responce.data.message);
         navigate("/"); // Navigate to the home page
       } else {
         toast("OTP did not match");
@@ -111,7 +118,7 @@ const RegisterOtp = () => {
               </Grid>
               <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
                 <Stack direction="row" spacing={2}>
-                  {timer ? (
+                  {timer !== 0 ? (
                     <Typography
                       variant="body1"
                       component="span"
@@ -163,7 +170,7 @@ const RegisterOtp = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate("/register");
+                        navigate("/auth/register");
                       }}
                     >
                       Create an Account

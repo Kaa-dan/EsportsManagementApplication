@@ -63,6 +63,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    // getFans:builder.mutation({
+    //   query:(data)=>({
+    //     url:"/api/admin/fans",
+    //     method :"GET",
+    //     body:data
+    //   })
+    // })
   }),
 });
 
@@ -75,4 +82,5 @@ export const {
   useOtpForgotPasswordMutation, // Hook for the OTP for forgot password mutation
   useUpdatePasswordMutation, // Hook for the update password mutation
   useGoogleAuthMutation, //Hook for google login and register
+  // useGetFansMutation
 } = authApiSlice;

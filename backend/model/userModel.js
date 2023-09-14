@@ -17,6 +17,17 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      default: "fan",
+    },
+    block: {
+      type: Boolean,
+      default: false,
+    },
+    profilePhoto: {
+      type: String,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt timestamps to documents

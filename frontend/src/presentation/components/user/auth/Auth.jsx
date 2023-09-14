@@ -1,23 +1,16 @@
-import { useTheme } from "@emotion/react";
 import bgVideo from "../../../../assets/User/login/Login.mp4";
 import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
 import {
   Avatar,
   Box,
   Grid,
-  ThemeProvider,
   Typography,
-  createTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
-const Auth = ({ children }) => {
 
+const Auth = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
   const { breakpoints } = useTheme();
@@ -56,7 +49,8 @@ const Auth = ({ children }) => {
             right: "50%",
             transform: "translate(-50%,-50%)",
             width: lg ? (md ? (sm ? "100%" : "75%") : "50%") : "40%",
-            height: "50",
+            height: "70%",
+            background: "rgba(0,0,0,0.7)",
             boxShadow: 24,
           }}
         >
@@ -67,32 +61,29 @@ const Auth = ({ children }) => {
                   backgroundSize: "cover",
                   height: "50vh",
                   minHeight: "500px",
-                  background: "rgba(0,0,0,0.7)",
                 }}
               >
-                {" "}
-                <ThemeProvider theme={darkTheme}>
-                  <Box height={35} />
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Box>
-                      <Avatar
-                        sx={{
-                          ml: "35px",
-                          mb: "4px",
-                          bgcolor: "#ffffff",
-                        }}
-                      >
-                        <VideogameAssetOutlinedIcon />
-                      </Avatar>{" "}
-                      <Typography component="h1" variant="h4">
-                        Sign In
-                      </Typography>
-                    </Box>
+                {/* <ThemeProvider theme={darkTheme}> */}
+                <Box height={35} />
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Box>
+                    <Avatar
+                      sx={{
+                        ml: "35px",
+                        mb: "4px",
+                        bgcolor: "#ffffff",
+                      }}
+                    >
+                      <VideogameAssetOutlinedIcon />
+                    </Avatar>{" "}
+                    <Typography component="h1" variant="h4">
+                      Sign In
+                    </Typography>
                   </Box>
-                  <Box height={35} />
-
-                  {children}
-                </ThemeProvider>
+                </Box>
+                <Box height={35} />
+                {children}
+                {/* </ThemeProvider> */}
               </Box>
             </Grid>
           </Grid>

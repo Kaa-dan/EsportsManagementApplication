@@ -4,8 +4,7 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // Importing components from MUI (Material-UI)
-import { Box, Grid, Typography, Container, Avatar, Stack } from "@mui/material";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import {  Grid, Typography, Container,  Stack } from "@mui/material";
 
 // Importing from Redux store
 import { useUpdatePasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -46,7 +45,7 @@ const ResetPassword = () => {
       dispatch(clearRegisterDetails());
       console.log(responce)
       toast(responce.data.message);
-      navigate("/login");
+      navigate("/auth/login");
     } catch (err) {
       toast(err?.data?.message || err.error);
     }
@@ -96,7 +95,7 @@ const ResetPassword = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate("/register");
+                        navigate("/auth/register");
                       }}
                     >
                       Create an Account

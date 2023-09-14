@@ -1,23 +1,4 @@
-// //for decoding jwt
-// import { OAuth2Client } from "google-auth-library";
 
-// const verifyIdToken = async (client_id, jwtToken) => {
-//   const client = new OAuth2Client(client_id);
-
-//   // Call the verifyIdToken tovarify and decode it
-//   const ticket = await client.verifyIdToken({
-//     idToken: jwtToken,
-//     audience: client_id,
-//   });
-
-//   //  JSON with all the user info
-//   const payload = ticket.getPayload();
-
-//   return payload;
-// };
-
-// export default verifyIdToken;
-// Import the required module for Google OAuth2 authentication
 import { OAuth2Client } from "google-auth-library";
 
 // Function for verifying and decoding a JWT (ID token)
