@@ -4,7 +4,6 @@ const notFound = (req, res, next) => {
 
   // Set the HTTP status code to 404
   res.status(404);
-
   // Pass the error to the next middleware
   next(error);
 };

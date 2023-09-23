@@ -17,7 +17,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Find the user by email
   const user = await User.findOne({ email });
-
   if (user.block) {
     res.status(401).json({ message: "Your account is blocked" });
     throw new Error("You have been blocked");
@@ -28,12 +27,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // Logging
     console.log(`User logged in: ${user.name}, ${user.email}`);
-
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profilePhoto: user.profilePhoto,
+      },
       message: "Logged in successfully",
     });
   } else {
@@ -44,47 +45,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // @desc  Register new user
 // route  POST /api/users/register
-// const registerUser = asyncHandler(async (req, res) => {
-//   console.log("nithin")
-//   const { name, email, password } = req.body;
-//   // Input Validation
-//   if (!name || !email || !password) {
-//     res.status(400);
-//     throw new Error("Name, email, and password are required.");
-//   }
 
-//   // Check if user with the same email already exists
-//   const userExists = await User.findOne({ email });
-//   if (userExists) {
-//     res.status(400);
-//     throw new Error("User already exists");
-//   }
-
-//   // Create a new user
-//   const user = await User.create({
-//     name,
-//     email,
-//     password,
-//   });
-
-//   if (user) {
-//     // Generate and set JWT token
-//     generateToken(res, user._id);
-
-//     // Logging
-//     console.log(`New user registered: ${user.name}, ${user.email}`);
-
-//     res.status(201).json({
-//       _id: user._id,
-//       name: user.userName,
-//       email: user.email,
-//       message: "Registration succesfull",
-//     });
-//   } else {
-//     res.status(400);
-//     throw new Error("Invalid user data");
-//   }
-// });
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   console.log("nithin");
@@ -120,11 +81,12 @@ const registerUser = asyncHandler(async (req, res) => {
       console.log(`New user registered: ${user.name}, ${user.email}`);
 
       res.status(201).json({
-        success: true,
         data: {
           _id: user._id,
-          name: user.userName,
+          name: user.name,
           email: user.email,
+          role: user.role,
+          profilePhoto: user.profilePhoto,
         },
         message: "Registration successful",
       });
@@ -147,24 +109,26 @@ const googleAuth = asyncHandler(async (req, res) => {
 
     const email = response.email;
 
-    const existingUser = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-    if (existingUser) {
+    if (user) {
       // Generate and set JWT token
-      generateToken(res, existingUser._id);
+      generateToken(res, user._id);
 
       // Logging
-      console.log(
-        `User logged in: ${existingUser.name}, ${existingUser.email}`
-      );
+      console.log(`User logged in: ${user.name}, ${user.email}`);
 
       res.status(201).json({
-        _id: existingUser._id,
-        name: existingUser.name,
-        email: existingUser.email,
-        message: `welcome ${existingUser.name}`,
+        data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          profilePhoto: user.profilePhoto,
+        },
+        message: `welcome ${user.name}`,
       });
-    } else if (!existingUser) {
+    } else if (!user) {
       // Create a new user
       const newUser = await User.create({
         name: response.name,
@@ -179,9 +143,13 @@ const googleAuth = asyncHandler(async (req, res) => {
         console.log(`New User registered: ${newUser.name}, ${newUser.email}`);
 
         res.status(201).json({
-          _id: newUser._id,
-          name: newUser.userName,
-          email: newUser.email,
+          data: {
+            _id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            profilePhoto: newUser.profilePhoto,
+          },
           message: "your password will be your email address",
         });
       }
@@ -239,7 +207,13 @@ const sentOtpForgotPasword = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       otp,
-      user,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profilePhoto: user.profilePhoto,
+      },
       message: `OTP sent for password reset to ${email}: ${otp}`,
     });
   } else {
@@ -251,8 +225,9 @@ const sentOtpForgotPasword = asyncHandler(async (req, res) => {
 //@desc   Change password
 //route   PATCH  /api/users/updatePassword
 const changePassword = asyncHandler(async (req, res) => {
-  const { email } = req.body.user;
-
+  console.log(req.body);
+  const { email } = req.body;
+  console.log(email);
   // Input Validation
   if (!email || !req.body.password) {
     res.status(400);
@@ -272,7 +247,13 @@ const changePassword = asyncHandler(async (req, res) => {
 
     const message = `Password changed for user: ${user.name}, ${user.email}`;
     res.status(200).json({
-      user,
+      data: {
+        id: user._id,
+        name: user.userName,
+        email: user.email,
+        role: user.role,
+        profilePhoto: user.profilePhoto,
+      },
       message,
     });
   } else {

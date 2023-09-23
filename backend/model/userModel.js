@@ -28,6 +28,11 @@ const userSchema = mongoose.Schema(
     profilePhoto: {
       type: String,
     },
+    playerId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Player",
+      default: null,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt timestamps to documents

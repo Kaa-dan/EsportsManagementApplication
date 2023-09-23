@@ -4,8 +4,7 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 
 // Importing MUI (Material-UI) components
-import {  Grid, Typography, Container,  Stack } from "@mui/material";
-
+import { Grid, Typography, Container, Stack } from "@mui/material";
 
 // Importing from Redux store
 import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -33,7 +32,7 @@ const ForgotPasswordOtp = () => {
   const dispatch = useDispatch();
   const [otpFrogotPassword] = useOtpForgotPasswordMutation();
   const otpValues = useSelector((state) => state.auth.otp);
-  const { user } = useSelector((state) => state.auth);
+  const { tempUser } = useSelector((state) => state.auth);
   const [timer, setTimer] = useState(10);
   useEffect(() => {
     //Setting  Otp timer
@@ -52,8 +51,10 @@ const ForgotPasswordOtp = () => {
   // Handler to resend OTP
   const resendHandler = async () => {
     try {
-      const responce = await otpFrogotPassword({ email: user.email }).unwrap();
-      console.log(responce);
+      const responce = await otpFrogotPassword({
+        email: tempUser.email,
+      }).unwrap();
+
       dispatch(setOtp(responce.otp));
       setTimer(10);
       toast(responce.message);
@@ -65,10 +66,10 @@ const ForgotPasswordOtp = () => {
   // Handler for form submission
   const submitHandler = async (values) => {
     try {
-      console.log(otpValues);
       // Check if entered OTP matches stored OTP
       if (otpValues === Number(values.otp)) {
         toast("Enter your new password");
+        console.log(tempUser);
         navigate("/auth/reset-password");
       }
     } catch (err) {
@@ -77,87 +78,85 @@ const ForgotPasswordOtp = () => {
   };
 
   return (
-    <AuthComponent>
-      <Container>
-        {/* Using Formik for form handling */}
-        <Formik
-          initialValues={{ ...INITIAL_FORM_STATE }}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={submitHandler}
-        >
-          <Form>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="otp" label="OTP" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                <Stack direction="row" spacing={2}>
-                  {timer ? (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      style={{
-                        marginTop: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Resend OTP in 00:{timer}
-                    </Typography>
-                  ) : (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      onClick={resendHandler}
-                      style={{
-                        marginTop: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Resend OTP
-                    </Typography>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                {/* Button for form submission */}
-                <ButtonWrapper>Confirm</ButtonWrapper>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  ml: "3em",
-                  mr: "3em",
-                }}
-              >
-                <Stack direction="row" spacing={2}>
+    <Container>
+      {/* Using Formik for form handling */}
+      <Formik
+        initialValues={{ ...INITIAL_FORM_STATE }}
+        validationSchema={FORM_VALIDATION}
+        onSubmit={submitHandler}
+      >
+        <Form>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <TextFieldWrapper name="otp" label="OTP" />
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
+              <Stack direction="row" spacing={2}>
+                {timer ? (
                   <Typography
                     variant="body1"
                     component="span"
                     style={{
                       marginTop: "10px",
+                      cursor: "pointer",
                     }}
                   >
-                    Not registered yet?{" "}
-                    <span
-                      style={{
-                        color: "#beb4fb",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        navigate("/auth/register");
-                      }}
-                    >
-                      Create an Account
-                    </span>
+                    Resend OTP in 00:{timer}
                   </Typography>
-                </Stack>
-              </Grid>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    component="span"
+                    onClick={resendHandler}
+                    style={{
+                      marginTop: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Resend OTP
+                  </Typography>
+                )}
+              </Stack>
             </Grid>
-          </Form>
-        </Formik>
-      </Container>
-    </AuthComponent>
+            <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+              {/* Button for form submission */}
+              <ButtonWrapper>Confirm</ButtonWrapper>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                ml: "3em",
+                mr: "3em",
+              }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  style={{
+                    marginTop: "10px",
+                  }}
+                >
+                  Not registered yet?{" "}
+                  <span
+                    style={{
+                      color: "#beb4fb",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate("/auth/register");
+                    }}
+                  >
+                    Create an Account
+                  </span>
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Form>
+      </Formik>
+    </Container>
   );
 };
 

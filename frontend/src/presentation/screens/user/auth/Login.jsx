@@ -1,5 +1,4 @@
 // importing custom components
-import AuthComponent from "../../../components/user/auth/Auth";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 import GoogleButton from "../../../components/user/auth/GoogleButton";
@@ -38,29 +37,22 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loginApi, { isLoading }] = useLoginMutation();
-  const { userInfo } = useSelector((state) => state.auth);
-
-  // Use Effect to check if the user is already logged in, if so, redirect to home page
-  // useEffect(() => {
-  
-  // }, [navigate, userInfo]);
+  const { user } = useSelector((state) => state.auth);
 
   // Submit Handler for Login
   const submitHandler = async (values) => {
     try {
-     
       const res = await loginApi({
         email: values.email,
         password: values.password,
       }).unwrap();
-      const { message, ...user } = res;
-      dispatch(setCredentials({ ...user }));
-      console.log(res)
-      
-      if (user.role === "admin") {
-        navigate("/admin/dashboard");
 
-        console.log(user.role)
+      dispatch(setCredentials({ ...res.data }));
+
+      if (res.data.role === "admin") {
+        navigate("/admin");
+
+        console.log(res.data.role);
       } else {
         console.log("user");
         navigate("/");
@@ -72,81 +64,79 @@ const Login = () => {
   };
 
   return (
-    <AuthComponent>
-      <Container>
-        {/* Using formik  */}
-        <Formik
-          initialValues={{ ...INITIAL_FORM_STATE }}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={submitHandler}
-        >
-          <Form>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="email" label="Email" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="password" label="Password" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                <Stack direction="row" spacing={2}>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    onClick={() => {
-                      navigate("/auth/forgot-password");
-                    }}
+    <Container>
+      {/* Using formik  */}
+      <Formik
+        initialValues={{ ...INITIAL_FORM_STATE }}
+        validationSchema={FORM_VALIDATION}
+        onSubmit={submitHandler}
+      >
+        <Form>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <TextFieldWrapper name="email" label="Email" />
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <TextFieldWrapper name="password" label="Password" />
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
+              <Stack direction="row" spacing={2}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  onClick={() => {
+                    navigate("/auth/forgot-password");
+                  }}
+                  style={{
+                    marginTop: "10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Forgot password?
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <ButtonWrapper>Sign In</ButtonWrapper>
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <GoogleButton />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                ml: "3em",
+                mr: "3em",
+              }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  style={{
+                    marginTop: "10px",
+                  }}
+                >
+                  Not registered yet?{" "}
+                  <span
                     style={{
-                      marginTop: "10px",
+                      color: "#beb4fb",
                       cursor: "pointer",
                     }}
-                  >
-                    Forgot password?
-                  </Typography>
-                </Stack>
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <ButtonWrapper>Sign In</ButtonWrapper>
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <GoogleButton />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  ml: "3em",
-                  mr: "3em",
-                }}
-              >
-                <Stack direction="row" spacing={2}>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    style={{
-                      marginTop: "10px",
+                    onClick={() => {
+                      navigate("/auth/register");
                     }}
                   >
-                    Not registered yet?{" "}
-                    <span
-                      style={{
-                        color: "#beb4fb",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        navigate("/auth/register");
-                      }}
-                    >
-                      Create an Account
-                    </span>
-                  </Typography>
-                </Stack>
-              </Grid>
+                    Create an Account
+                  </span>
+                </Typography>
+              </Stack>
             </Grid>
-          </Form>
-        </Formik>
-      </Container>
-    </AuthComponent>
+          </Grid>
+        </Form>
+      </Formik>
+    </Container>
   );
 };
 

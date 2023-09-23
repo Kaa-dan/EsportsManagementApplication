@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userInfo: localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
-    : null,
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
+    : null,
+  tempUser: localStorage.getItem("tempUser")
+    ? JSON.parse(localStorage.getItem("tempUser"))
     : null,
   otp: localStorage.getItem("otp") ? Number(localStorage.getItem("otp")) : null,
 };
@@ -15,16 +15,16 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.userInfo = action.payload;
-      localStorage.setItem("userInfo", JSON.stringify(action.payload));
-    },
-    logout: (state, action) => {
-      state.userInfo = null;
-      localStorage.removeItem("userInfo");
-    },
-    setRegisterCredentials: (state, action) => {
       state.user = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload));
+    },
+    logout: (state, action) => {
+      state.user = null;
+      localStorage.removeItem("user");
+    },
+    setRegisterCredentials: (state, action) => {
+      state.tempUser = action.payload;
+      localStorage.setItem("tempUser", JSON.stringify(action.payload));
     },
     setOtp: (state, action) => {
       state.otp = action.payload;
@@ -32,9 +32,9 @@ const authSlice = createSlice({
     },
     clearRegisterDetails: (state, action) => {
       state.otp = null;
-      state.user = null;
+      state.tempUser = null;
       localStorage.removeItem("otp");
-      localStorage.removeItem("user");
+      localStorage.removeItem("tempUser");
     },
   },
 });

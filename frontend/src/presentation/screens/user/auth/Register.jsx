@@ -4,8 +4,7 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // importing mui components
-import { Grid, Typography, Container,  Stack } from "@mui/material";
-
+import { Grid, Typography, Container, Stack } from "@mui/material";
 
 // importing from redux store
 import { setOtp } from "../../../../application/slice/user/authSlice";
@@ -57,7 +56,6 @@ const Register = () => {
           password: values.password,
         })
       );
-      console.log(response);
       dispatch(setOtp(response.otp));
       toast(response.message);
       // Navigate to the OTP verification page
@@ -69,67 +67,65 @@ const Register = () => {
 
   return (
     <>
-      <AuthComponent>
-        <Container>
-          <Formik
-            initialValues={{ ...INITIAL_FORM_STATE }}
-            validationSchema={FORM_VALIDATION}
-            onSubmit={submitHandler}
-          >
-            <Form>
-              <Grid container spacing={1}>
-                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                  <TextFieldWrapper name="name" label="Username" />
-                </Grid>
-                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                  <TextFieldWrapper name="email" label="Email" />
-                </Grid>
-                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                  <TextFieldWrapper
-                    name="password"
-                    label="Password"
-                    type="password"
-                  />
-                </Grid>
-                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                  <ButtonWrapper>Register</ButtonWrapper>
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  sx={{
-                    ml: "3em",
-                    mr: "3em",
-                  }}
-                >
-                  <Stack direction="row" spacing={2}>
-                    <Typography
-                      variant="body1"
-                      component="span"
+      <Container>
+        <Formik
+          initialValues={{ ...INITIAL_FORM_STATE }}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={submitHandler}
+        >
+          <Form>
+            <Grid container spacing={1}>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                <TextFieldWrapper name="name" label="Username" />
+              </Grid>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                <TextFieldWrapper name="email" label="Email" />
+              </Grid>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                <TextFieldWrapper
+                  name="password"
+                  label="Password"
+                  type="password"
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                <ButtonWrapper>Register</ButtonWrapper>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  ml: "3em",
+                  mr: "3em",
+                }}
+              >
+                <Stack direction="row" spacing={2}>
+                  <Typography
+                    variant="body1"
+                    component="span"
+                    style={{
+                      marginTop: "10px",
+                    }}
+                  >
+                    Already have an account?{" "}
+                    <span
                       style={{
-                        marginTop: "10px",
+                        color: "#beb4fb",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        navigate("/auth/login");
                       }}
                     >
-                      Already have an account?{" "}
-                      <span
-                        style={{
-                          color: "#beb4fb",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => {
-                          navigate("/auth/login");
-                        }}
-                      >
-                        Go to Sign in
-                      </span>
-                    </Typography>
-                  </Stack>
-                </Grid>
+                      Go to Sign in
+                    </span>
+                  </Typography>
+                </Stack>
               </Grid>
-            </Form>
-          </Formik>
-        </Container>
-      </AuthComponent>
+            </Grid>
+          </Form>
+        </Formik>
+      </Container>
     </>
   );
 };

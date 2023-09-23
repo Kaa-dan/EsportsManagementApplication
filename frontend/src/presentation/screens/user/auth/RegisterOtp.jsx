@@ -36,11 +36,12 @@ const RegisterOtp = () => {
   const dispatch = useDispatch(); // Redux dispatch function
   const [otpRegister] = useOtpRegisterMutation(); // Mutation to generate OTP
   const [register] = useRegisterMutation(); // Mutation for user registration
-  const { userInfo } = useSelector((state) => state.auth); //Existing User info from Redux state
-  const { user } = useSelector((state) => state.auth); //Registering User data from Redux state
+  const { user } = useSelector((state) => state.auth); //Existing User info from Redux state
+  const { tempUser } = useSelector((state) => state.auth); //Registering User data from Redux state
   const otpValues = useSelector((state) => state.auth.otp); // OTP value from Redux state
   const [timer, setTimer] = useState(10); //for Otp timer
   useEffect(() => {
+  
     //Setting  Otp timer
     let newTimer = setInterval(() => {
       if (timer > 0) {
@@ -49,19 +50,19 @@ const RegisterOtp = () => {
         clearInterval(newTimer);
       }
     }, 1000);
-    if (userInfo) {
+    if (user) {
       // If the user is already logged in, navigate to the home page
       navigate("/");
     }
     return () => {
       clearInterval(newTimer);
     };
-  }, [navigate, userInfo, timer]);
+  }, [navigate, user, timer]);
 
   // Resend OTP handler
   const resendHandler = async () => {
     try {
-      const responce = await otpRegister({ email: user.email }).unwrap(); // Generate and resend OTP
+      const responce = await otpRegister({ email: tempUser.email }).unwrap(); // Generate and resend OTP
       dispatch(setOtp(responce.otp)); // Update the OTP in Redux state
       setTimer(10);
       toast(responce.message);
@@ -76,21 +77,14 @@ const RegisterOtp = () => {
       console.log(otpValues);
 
       if (otpValues === Number(values.otp)) {
-        // If the entered OTP matches the one in Redux state
-        // const responce = await register({
-        //   name: user.name,
-        //   email: user.email,
-        //   password: user.password,
-        // }).unwrap(); // Register the user
+  
         const responce = await register({
-          name: user.name,
-          email: user.email,
-          password: user.password,
+          name: tempUser.name,
+          email: tempUser.email,
+          password: tempUser.password,
         });
-        console.log("responce", responce);
-        console.log(responce.data.message);
-        // const { message, ...user } = responce;
-        dispatch(setCredentials({ ...user })); // Update user credentials in Redux state
+
+        dispatch(setCredentials({ ...responce.data.data })); // Update user credentials in Redux state
         dispatch(clearRegisterDetails()); // Clear registration details from Redux state
         toast(responce.data.message);
         navigate("/"); // Navigate to the home page
@@ -103,86 +97,84 @@ const RegisterOtp = () => {
   };
 
   return (
-    <AuthComponent>
-      <Container>
-        {/* Using formik */}
-        <Formik
-          initialValues={{ ...INITIAL_FORM_STATE }}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={submitHandler}
-        >
-          <Form>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <TextFieldWrapper name="otp" label="OTP" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                <Stack direction="row" spacing={2}>
-                  {timer !== 0 ? (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      style={{
-                        marginTop: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Resend OTP in 00:{timer}
-                    </Typography>
-                  ) : (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      onClick={resendHandler}
-                      style={{
-                        marginTop: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Resend OTP
-                    </Typography>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                <ButtonWrapper>Confirm</ButtonWrapper>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  ml: "3em",
-                  mr: "3em",
-                }}
-              >
-                <Stack direction="row" spacing={2}>
+    <Container>
+      {/* Using formik */}
+      <Formik
+        initialValues={{ ...INITIAL_FORM_STATE }}
+        validationSchema={FORM_VALIDATION}
+        onSubmit={submitHandler}
+      >
+        <Form>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+              <TextFieldWrapper name="otp" label="OTP" />
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
+              <Stack direction="row" spacing={2}>
+                {timer !== 0 ? (
                   <Typography
                     variant="body1"
                     component="span"
                     style={{
                       marginTop: "10px",
+                      cursor: "pointer",
                     }}
                   >
-                    Not registered yet?{" "}
-                    <span
-                      style={{
-                        color: "#beb4fb",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        navigate("/auth/register");
-                      }}
-                    >
-                      Create an Account
-                    </span>
+                    Resend OTP in 00:{timer}
                   </Typography>
-                </Stack>
-              </Grid>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    component="span"
+                    onClick={resendHandler}
+                    style={{
+                      marginTop: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Resend OTP
+                  </Typography>
+                )}
+              </Stack>
             </Grid>
-          </Form>
-        </Formik>
-      </Container>
-    </AuthComponent>
+            <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+              <ButtonWrapper>Confirm</ButtonWrapper>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                ml: "3em",
+                mr: "3em",
+              }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  style={{
+                    marginTop: "10px",
+                  }}
+                >
+                  Not registered yet?{" "}
+                  <span
+                    style={{
+                      color: "#beb4fb",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate("/auth/register");
+                    }}
+                  >
+                    Create an Account
+                  </span>
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Form>
+      </Formik>
+    </Container>
   );
 };
 

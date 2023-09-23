@@ -1,31 +1,36 @@
 import AccountProfile from "../../../components/user/dashboard/profile";
 import AccountProfileDetails from "../../../components/user/dashboard/profile2";
-import {
-  Box,
-  Container,
-  Stack,
-  Typography,
-  Unstable_Grid2 as Grid,
-} from "@mui/material";
+import profilebg from "../../../../assets/user/profile/profilebg.gif";
+import { Box, Container, Stack, Unstable_Grid2 as Grid } from "@mui/material";
 
 const Account = () => {
-  const data = {};
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        py: 8,
+    <div
+      style={{
+        backgroundSize: "cover",
+        height: "50vh",
+        color: "#f5f5f5",
+        // backgroundColor: "black",
+        background: `url(${profilebg})`,
+        // backgroundRepeat:"no-repeat"
       }}
     >
-      <Container maxWidth="lg">
-        <Stack spacing={3}>
-          <AccountProfileDetails />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Stack spacing={3}>
+            <AccountProfileDetails />
 
-          <AccountProfile />
-        </Stack>
-      </Container>
-    </Box>
+            {/* <AccountProfile /> */}
+          </Stack>
+        </Container>
+      </Box>
+    </div>
   );
 };
 export default Account;

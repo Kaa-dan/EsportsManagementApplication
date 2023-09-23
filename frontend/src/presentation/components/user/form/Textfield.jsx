@@ -3,8 +3,6 @@ import { useField } from "formik";
 
 const TextFieldWrapper = ({ name, ...otherProps }) => {
   const [field, mata] = useField(name);
-  // console.log(field)
-  // console.log(mata)
   const configTextfield = {
     ...field,
     ...otherProps,

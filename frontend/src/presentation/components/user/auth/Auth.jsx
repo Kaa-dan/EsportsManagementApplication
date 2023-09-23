@@ -8,11 +8,44 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Login from "../../../screens/user/auth/Login";
+import Register from "../../../screens/user/auth/Register";
+import ForgotPassword from "../../../screens/user/auth/ForgotPassword";
+import { useMemo } from "react";
+import RegisterOtp from "../../../screens/user/auth/RegisterOtp";
+import ForgotPasswordOtp from "../../../screens/user/auth/ForgotPasswordOtp";
+import ResetPassword from "../../../screens/user/auth/ResetPassword";
 
 const Auth = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
+  const list = useMemo(() => [
+    {
+      link: "login",
+      component: <Login />,
+    },
+    {
+      link: "register",
+      component: <Register />,
+    },
+    {
+      link: "forgot-password",
+      component: <ForgotPassword />,
+    },
+    {
+      link: "register-otp",
+      component: <RegisterOtp />,
+    },
+    {
+      link: "forgot-password-otp",
+      component: <ForgotPasswordOtp />,
+    },
+    {
+      link: "reset-password",
+      component: <ResetPassword />,
+    },
+  ]);
   const { breakpoints } = useTheme();
   const lg = useMediaQuery(breakpoints.down("lg"));
   const md = useMediaQuery(breakpoints.down("md"));
@@ -49,7 +82,7 @@ const Auth = ({ children }) => {
             right: "50%",
             transform: "translate(-50%,-50%)",
             width: lg ? (md ? (sm ? "100%" : "75%") : "50%") : "40%",
-            height: "70%",
+            height: lg ? (md ? (sm ? "80%" : "75%") : "70%") : "70%",
             background: "rgba(0,0,0,0.7)",
             boxShadow: 24,
           }}
@@ -63,7 +96,6 @@ const Auth = ({ children }) => {
                   minHeight: "500px",
                 }}
               >
-                {/* <ThemeProvider theme={darkTheme}> */}
                 <Box height={35} />
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Box>
@@ -83,7 +115,16 @@ const Auth = ({ children }) => {
                 </Box>
                 <Box height={35} />
                 {children}
-                {/* </ThemeProvider> */}
+
+                <Routes>
+                  {list.map((item) => (
+                    <Route
+                      key={item.link}
+                      path={item.link}
+                      element={item.component}
+                    />
+                  ))}
+                </Routes>
               </Box>
             </Grid>
           </Grid>

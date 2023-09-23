@@ -2,7 +2,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useGoogleAuthMutation } from "../../../../application/slice/user/authApiSlice"; // Redux Toolkit Query mutation
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCredentials } from "../../../../application/slice/user/authSlice"; // Redux action for setting user credentials
 
 function GoogleButton() {
@@ -14,17 +14,17 @@ function GoogleButton() {
   const successHandler = async (credentialResponse) => {
     try {
       // GoogleAuth mutation
+
       const response = await GoogleAuthApi(credentialResponse).unwrap();
 
-      const { message, ...user } = response;
-
+      console.log(response.data);
       // If the response contains an email (successful login), proceed
-      if (user.email) {
+      if (response.data.email) {
         //  storing user data in Redux
-        dispatch(setCredentials({ ...user }));
+        dispatch(setCredentials({ ...response.data }));
 
         // Display a success toast message
-        toast(message);
+        toast(response.message);
 
         // Navigate to the home page
         navigate("/");
@@ -42,7 +42,7 @@ function GoogleButton() {
         width={"100%"}
         onSuccess={successHandler}
         onError={() => {
-          console.log("Login Failed");
+          toast("Login Failed");
         }}
         theme="filled_black"
         text="continue_with"

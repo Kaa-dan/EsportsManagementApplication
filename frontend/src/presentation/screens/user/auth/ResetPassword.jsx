@@ -4,7 +4,7 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // Importing components from MUI (Material-UI)
-import {  Grid, Typography, Container,  Stack } from "@mui/material";
+import { Grid, Typography, Container, Stack } from "@mui/material";
 
 // Importing from Redux store
 import { useUpdatePasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -33,18 +33,18 @@ const FORM_VALIDATION = Yup.object().shape({
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [updatePassword] = useUpdatePasswordMutation();
-  const { user } = useSelector((state) => state.auth);
+  const { tempUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   // Submit Handler for password change
   const submitHandler = async (values) => {
     try {
       const responce = await updatePassword({
         password: values.password,
-        user,
+        email: tempUser.email,
       });
-      dispatch(clearRegisterDetails());
-      console.log(responce)
+
       toast(responce.data.message);
+      dispatch(clearRegisterDetails());
       navigate("/auth/login");
     } catch (err) {
       toast(err?.data?.message || err.error);
@@ -52,62 +52,60 @@ const ResetPassword = () => {
   };
 
   return (
-    <AuthComponent>
-      <Container>
-        {/* Using Formik for form handling */}
-        <Formik
-          initialValues={{ ...INITIAL_FORM_STATE }}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={submitHandler}
-        >
-          <Form>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mt: "50px" }}>
-                <TextFieldWrapper name="password" label="New password" />
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
-                <Stack height={50} direction="row" spacing={2}></Stack>
-              </Grid>
-              <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                {/* Button for form submission */}
-                <ButtonWrapper>Confirm</ButtonWrapper>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  ml: "3em",
-                  mr: "3em",
-                }}
-              >
-                <Stack direction="row" spacing={2}>
-                  <Typography
-                    variant="body1"
-                    component="span"
+    <Container>
+      {/* Using Formik for form handling */}
+      <Formik
+        initialValues={{ ...INITIAL_FORM_STATE }}
+        validationSchema={FORM_VALIDATION}
+        onSubmit={submitHandler}
+      >
+        <Form>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mt: "50px" }}>
+              <TextFieldWrapper name="password" label="New password" />
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
+              <Stack height={50} direction="row" spacing={2}></Stack>
+            </Grid>
+            <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+              {/* Button for form submission */}
+              <ButtonWrapper>Confirm</ButtonWrapper>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                ml: "3em",
+                mr: "3em",
+              }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  style={{
+                    marginTop: "10px",
+                  }}
+                >
+                  Not registered yet?{" "}
+                  <span
                     style={{
-                      marginTop: "10px",
+                      color: "#beb4fb",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate("/auth/register");
                     }}
                   >
-                    Not registered yet?{" "}
-                    <span
-                      style={{
-                        color: "#beb4fb",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        navigate("/auth/register");
-                      }}
-                    >
-                      Create an Account
-                    </span>
-                  </Typography>
-                </Stack>
-              </Grid>
+                    Create an Account
+                  </span>
+                </Typography>
+              </Stack>
             </Grid>
-          </Form>
-        </Formik>
-      </Container>
-    </AuthComponent>
+          </Grid>
+        </Form>
+      </Formik>
+    </Container>
   );
 };
 
