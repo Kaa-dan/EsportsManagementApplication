@@ -3,7 +3,7 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 import GoogleButton from "../../../components/user/auth/GoogleButton";
 // importing mui components
-import { Grid, Typography, Container, Stack } from "@mui/material";
+import { Grid, Typography, Container, Stack, CircularProgress } from "@mui/material";
 // importing from redux store
 import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
 import { setCredentials } from "../../../../application/slice/user/authSlice";
@@ -11,7 +11,7 @@ import { setCredentials } from "../../../../application/slice/user/authSlice";
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
@@ -59,7 +59,8 @@ const Login = () => {
       }
       toast(message);
     } catch (err) {
-      toast(err?.data?.message || err.error);
+      console.log(err)
+      toast(err?.data?.error);
     }
   };
 
@@ -97,7 +98,11 @@ const Login = () => {
               </Stack>
             </Grid>
             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-              <ButtonWrapper>Sign In</ButtonWrapper>
+              {isLoading ? (
+                <CircularProgress size={20} />
+              ) : (
+                <ButtonWrapper>Sign In</ButtonWrapper>
+              )}
             </Grid>
             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
               <GoogleButton />

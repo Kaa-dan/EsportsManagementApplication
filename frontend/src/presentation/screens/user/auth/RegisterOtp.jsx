@@ -4,7 +4,13 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 
 // importing mui components
-import { Grid, Typography, Container, Stack } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
 
 // importing from the redux store
 import { useRegisterMutation } from "../../../../application/slice/user/authApiSlice";
@@ -34,14 +40,13 @@ const FORM_VALIDATION = Yup.object().shape({
 const RegisterOtp = () => {
   const navigate = useNavigate(); // Hook for navigation
   const dispatch = useDispatch(); // Redux dispatch function
-  const [otpRegister] = useOtpRegisterMutation(); // Mutation to generate OTP
-  const [register] = useRegisterMutation(); // Mutation for user registration
+  const [otpRegister, { isLoading }] = useOtpRegisterMutation(); // Mutation to generate OTP
+  const [register, { isLoading: isLoadingRegister }] = useRegisterMutation(); // Mutation for user registration
   const { user } = useSelector((state) => state.auth); //Existing User info from Redux state
   const { tempUser } = useSelector((state) => state.auth); //Registering User data from Redux state
   const otpValues = useSelector((state) => state.auth.otp); // OTP value from Redux state
   const [timer, setTimer] = useState(10); //for Otp timer
   useEffect(() => {
-  
     //Setting  Otp timer
     let newTimer = setInterval(() => {
       if (timer > 0) {
@@ -77,7 +82,6 @@ const RegisterOtp = () => {
       console.log(otpValues);
 
       if (otpValues === Number(values.otp)) {
-  
         const responce = await register({
           name: tempUser.name,
           email: tempUser.email,
@@ -111,7 +115,7 @@ const RegisterOtp = () => {
             </Grid>
             <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
               <Stack direction="row" spacing={2}>
-                {timer !== 0 ? (
+                {isLoading ? null : timer !== 0 ? (
                   <Typography
                     variant="body1"
                     component="span"
@@ -138,7 +142,13 @@ const RegisterOtp = () => {
               </Stack>
             </Grid>
             <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-              <ButtonWrapper>Confirm</ButtonWrapper>
+              {isLoading ? (
+                <CircularProgress size={20} />
+              ) : isLoadingRegister ? (
+                <CircularProgress size={20} />
+              ) : (
+                <ButtonWrapper>Confirm</ButtonWrapper>
+              )}
             </Grid>
             <Grid
               item

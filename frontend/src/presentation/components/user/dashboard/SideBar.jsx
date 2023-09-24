@@ -13,34 +13,43 @@ import {
   Tooltip,
   Avatar,
   Modal,
-  Button,
 } from "@mui/material";
-
 import MuiDrawer from "@mui/material/Drawer";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
-import LogoutIcon from "@mui/icons-material/Logout";
-import LiveTvIcon from "@mui/icons-material/LiveTv";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../../../application/slice/user/authSlice";
-import { useLogoutMutation } from "../../../../application/slice/user/authApiSlice";
-import { Route, Routes, useNavigate } from "react-router-dom";
 import ProfileImage from "../../../../assets/user/profile/profile.jpeg";
-import { toast } from "react-toastify";
-import { useMemo } from "react";
-import Profile from "../../../screens/user/home/Profile";
-import LiveCorner from "../../../screens/user/home/LiveCorner";
-import Person4Icon from "@mui/icons-material/Person4";
-import Fans from "../../../screens/admin/Fans";
-import Recruit from "../../../screens/admin/Recruit";
-import ContactMailIcon from "@mui/icons-material/ContactMail";
-import Teams from "../../../screens/admin/Teams";
+import banner from "../../../../assets/user/dashboard/banner.gif";
+// mui icons
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import Notification from "../../../screens/user/home/Notification";
+import LogoutIcon from "@mui/icons-material/Logout";
 import LiveTvTwoToneIcon from "@mui/icons-material/LiveTvTwoTone";
-import Live from "../../../screens/player/Live";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import Person4Icon from "@mui/icons-material/Person4";
+import MenuOpenTwoToneIcon from "@mui/icons-material/MenuOpenTwoTone";
+
+// custom fans component
+import Profile from "../../../screens/user/home/Profile";
+import Notification from "../../../screens/user/home/Notification";
+import LiveCorner from "../../../screens/user/home/LiveCorner";
+
+// custom player component
 import LiveSetup from "../../../screens/player/LiveSetup";
+import Live from "../../../screens/player/Live";
+
+// custom admin component
+import Fans from "../../../screens/admin/Fans";
+import Teams from "../../../screens/admin/Teams";
+import Recruit from "../../../screens/admin/Recruit";
+
+// redux store
+import { logout } from "../../../../application/slice/user/authSlice";
+import { useLogoutMutation } from "../../../../application/slice/user/authApiSlice";
+
+import { useSelector, useDispatch } from "react-redux";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useMemo } from "react";
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -102,8 +111,8 @@ const style = {
 
 const SideBar = ({ open, setOpen }) => {
   const [profileOpen, setProfileOpen] = useState(false);
-  const handleOpen = () => setProfileOpen(true);
-  const handleClose = () => setProfileOpen(false);
+  const profileOpenHandler = () => setProfileOpen(true);
+  const profileCloseHandler = () => setProfileOpen(false);
   const [logoutApiCall] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -125,12 +134,7 @@ const SideBar = ({ open, setOpen }) => {
           link: "notification",
           component: <Notification />,
         },
-        {
-          title: "Go live",
-          icon: <LiveTvTwoToneIcon />,
-          link: `stream`,
-          component: <Live />,
-        },
+      
       ]);
     } else if (user.role === "admin") {
       list = useMemo(() => [
@@ -178,24 +182,26 @@ const SideBar = ({ open, setOpen }) => {
   return (
     <>
       <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, textAlign: "center" }}
-          >
-            Kaadan Esports
-          </Typography>
+        <DrawerHeader
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            // justifyContent: "space-between",
+            // backgroundImage: `url(${banner})`,
+            // backgroundSize: "cover",
+
+            backgroundPosition: "center center",
+          }}
+        >
           <IconButton onClick={() => setOpen(!open)}>
-            <ChevronLeftIcon />
+            <MenuOpenTwoToneIcon />
           </IconButton>
         </DrawerHeader>
-        <Divider />
-        <Box sx={{ mx: "auto", mt: 3, mb: 1 }}>
+
+        <Box sx={{ mx: "auto", mt: 1, mb: 2 }}>
           <Tooltip>
             <Avatar
-              onClick={handleOpen}
+              onClick={profileOpenHandler}
               src={ProfileImage}
               {...(open && { sx: { width: 100, height: 100 } })}
             />
@@ -203,7 +209,7 @@ const SideBar = ({ open, setOpen }) => {
           <div>
             <Modal
               open={profileOpen}
-              onClose={handleClose}
+              onClose={profileCloseHandler}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
@@ -213,23 +219,25 @@ const SideBar = ({ open, setOpen }) => {
             </Modal>
           </div>
         </Box>
-        <Box sx={{ textAlign: "center" }}>
-          {open && (
-            <Typography>
-              {console.log(user.name)}
-              {user ? user.name : null}
 
-              <Tooltip>
-                <IconButton>
-                  <SentimentSatisfiedAltIcon />
-                </IconButton>
-              </Tooltip>
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          {open && (
+            <Typography
+              sx={{ fontWeight: "bold", fontSize: "1.5rem", color: "#333" }}
+            >
+              {user ? user.name : null}
             </Typography>
           )}
         </Box>
+
+        <Divider />
         <List>
           {list.map((item, index) => (
-            <ListItem key={index} disablePadding sx={{ display: "block" }}>
+            <ListItem
+              key={index}
+              disablePadding
+              sx={{ display: "block", mt: 1, mb: 1 }}
+            >
               <ListItemButton
                 sx={{
                   minHeight: 48,

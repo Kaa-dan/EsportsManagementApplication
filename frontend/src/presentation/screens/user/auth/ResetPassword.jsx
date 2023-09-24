@@ -1,10 +1,15 @@
 // Importing custom components
-import AuthComponent from "../../../components/user/auth/Auth";
 import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // Importing components from MUI (Material-UI)
-import { Grid, Typography, Container, Stack } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
 
 // Importing from Redux store
 import { useUpdatePasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -25,14 +30,14 @@ const FORM_VALIDATION = Yup.object().shape({
     .required("Required")
     .min(8, "Password must be at least 8 characters")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
 });
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const [updatePassword] = useUpdatePasswordMutation();
+  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
   const { tempUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   // Submit Handler for password change
@@ -69,7 +74,11 @@ const ResetPassword = () => {
             </Grid>
             <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
               {/* Button for form submission */}
-              <ButtonWrapper>Confirm</ButtonWrapper>
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <ButtonWrapper>Confirm</ButtonWrapper>
+              )}
             </Grid>
             <Grid
               item

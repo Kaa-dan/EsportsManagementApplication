@@ -7,6 +7,7 @@ import { sendEmail } from "../middlewares/otpValidation.js";
 // @desc  Auth User/set token
 // route  POST  /api/users/login
 const loginUser = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
 
   // Input Validation
@@ -17,6 +18,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Find the user by email
   const user = await User.findOne({ email });
+  console.log(user);
   if (user.block) {
     res.status(401).json({ message: "Your account is blocked" });
     throw new Error("You have been blocked");
@@ -24,7 +26,6 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     // Generate and set JWT token
     generateToken(res, user._id);
-
     // Logging
     console.log(`User logged in: ${user.name}, ${user.email}`);
     res.status(201).json({
@@ -34,12 +35,12 @@ const loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
         profilePhoto: user.profilePhoto,
+        // ...user,
       },
       message: "Logged in successfully",
     });
   } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+    res.status(500).json({ success: false, error: "invalid credentials" });
   }
 });
 
@@ -91,7 +92,8 @@ const registerUser = asyncHandler(async (req, res) => {
         message: "Registration successful",
       });
     } else {
-      res.status(400).json({ success: false, error: "Invalid user data" });
+      res.status(400);
+      throw new Error("invalid user data");
     }
   } catch (error) {
     console.error(error); // Log any unexpected errors

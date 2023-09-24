@@ -42,7 +42,7 @@ const AccountProfileDetails = () => {
   const dispatch = useDispatch();
   const [updatProfile] = useUpdateProfileMutation();
   let [imageFile, setImageFile] = useState(null);
-  let [edit, setEdit] = useState(false);
+
   const submitHandler = async (value) => {
     try {
       const formData = new FormData();
@@ -60,65 +60,59 @@ const AccountProfileDetails = () => {
 
   return (
     <>
-      <Button variant="outlined" size="small" onClick={() => setEdit(!edit)}>
-        Edit
-      </Button>
+      <Formik
+        initialValues={{ ...INITIAL_FORM_STATE }}
+        validationSchema={FORM_VALIDATION}
+        onSubmit={submitHandler}
+      >
+        <Form encType="multipart/form-data">
+          <Card>
+            <CardHeader subheader="The information can be edited" />
 
-      {edit ? (
-        <Formik
-          initialValues={{ ...INITIAL_FORM_STATE }}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={submitHandler}
-        >
-          <Form encType="multipart/form-data">
-            <Card>
-              <CardHeader subheader="The information can be edited" />
-
-              <CardContent sx={{ pt: 0 }}>
-                <Box sx={{ m: -1.5 }}>
-                  <Grid container spacing={3}>
-                    <Grid xs={12} md={6}>
-                      <TextfieldWrapper name="name" label="Username" />
-                    </Grid>
-                    <Grid xs={12} md={6}>
-                      <TextfieldWrapper name="password" label="Password" />
-                    </Grid>
-                    <Grid xs={12} md={6}>
-                      <input
-                        hidden
-                        id="profilePhoto"
-                        name="profilePhoto"
-                        type="file"
-                        onChange={(event) => {
-                          setImageFile(event.currentTarget.files[0]);
-                        }}
-                      />
-                      <Button variant="outlined">
-                        <label htmlFor="profilePhoto">
-                          Upload new ProfileImage{<CloudUploadIcon />}
-                        </label>
-                      </Button>
-                      <Card sx={{ maxWidth: 345 }}>
-                        <CardMedia
-                          sx={{ height: 140 }}
-                          src={imageFile ? imageFile : user.profilePhoto}
-                          title="Profile photo"
-                          />
-                          {console.log(user.profilePhoto)}
-                      </Card>
-                    </Grid>
-                    <Grid xs={12} md={6}></Grid>
+            <CardContent sx={{ pt: 0 }}>
+              <Box sx={{ m: -1.5 }}>
+                <Grid container spacing={3}>
+                  <Grid xs={12} md={6}>
+                    <TextfieldWrapper name="name" label="Username" />
                   </Grid>
-                </Box>
-              </CardContent>
-              <Divider />
-              <CardActions sx={{ justifyContent: "flex-end" }}>
-                <ButtonWrapper>Save details</ButtonWrapper>
-              </CardActions>
-            </Card>
-          </Form>
-        </Formik>
-      ) : null}
+                  <Grid xs={12} md={6}>
+                    <TextfieldWrapper name="password" label="Password" />
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <input
+                      hidden
+                      id="profilePhoto"
+                      name="profilePhoto"
+                      type="file"
+                      onChange={(event) => {
+                        setImageFile(event.currentTarget.files[0]);
+                      }}
+                    />
+                    <Button variant="outlined">
+                      <label htmlFor="profilePhoto">
+                        Upload new ProfileImage{<CloudUploadIcon />}
+                      </label>
+                    </Button>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <Card sx={{ maxWidth: 345 }}>
+                      <CardMedia
+                        sx={{ height: 140 }}
+                        src={imageFile ? imageFile : user.profilePhoto}
+                        title="Profile photo"
+                      />
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Box>
+            </CardContent>
+            <Divider />
+            <CardActions sx={{ justifyContent: "flex-end" }}>
+              <ButtonWrapper>Save details</ButtonWrapper>
+            </CardActions>
+          </Card>
+        </Form>
+      </Formik>
     </>
   );
 };

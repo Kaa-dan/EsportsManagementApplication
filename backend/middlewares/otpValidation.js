@@ -5,7 +5,6 @@ import Mailgen from "mailgen";
 dotenv.config();
 
 export const sendEmail = async function (email) {
-  console.log(email);
   let randomOTP = Math.floor(Math.random() * 9000) + 1000;
 
   // Create a transporter object using your Gmail SMTP settings

@@ -1,10 +1,16 @@
 // importing custom components
-import AuthComponent from "../../../components/user/auth/Auth";
 import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // importing mui components
-import { Grid, Typography, Container, Stack } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  CircularProgress,
+  Box,
+} from "@mui/material";
 
 // importing from redux store
 import { setOtp } from "../../../../application/slice/user/authSlice";
@@ -33,20 +39,19 @@ const FORM_VALIDATION = Yup.object().shape({
     .required("Required")
     .min(8, "Password must be at least 8 characters")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
 });
 
 const Register = () => {
-  const [otpRegister] = useOtpRegisterMutation(); // Mutation to generate OTP
-  const navigate = useNavigate(); // Hook for navigation
-  const dispatch = useDispatch(); // Redux dispatch function
+  const [otpRegister, { isLoading }] = useOtpRegisterMutation(); // Mutation to generate OTP
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Submit Handler for Registration
   const submitHandler = async (values) => {
     try {
-      console.log(values);
       // Generate OTP and store it in Redux state
       const response = await otpRegister({ email: values.email }).unwrap();
       dispatch(
@@ -89,7 +94,11 @@ const Register = () => {
                 />
               </Grid>
               <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <ButtonWrapper>Register</ButtonWrapper>
+                {isLoading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <ButtonWrapper>Register</ButtonWrapper>
+                )}
               </Grid>
               <Grid
                 item

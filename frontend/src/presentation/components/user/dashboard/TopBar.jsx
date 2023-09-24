@@ -1,12 +1,14 @@
-import React from "react";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import MuiAppBar from "@mui/material/AppBar";
+import { Toolbar, Typography, AppBar } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+// mui icons
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { styled } from "@mui/material/styles";
+
 const drawerWidth = 240;
-const AppBar = styled(MuiAppBar, {
+
+// Style the AppBar component, making it adjust its width when the drawer is open or closed
+const StyledAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
@@ -25,13 +27,14 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const TopBar = ({ open, setOpen }) => {
+  // Function to handle opening the drawer
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
   return (
     <>
-      <AppBar position="fixed" open={open}>
+      <StyledAppBar position="fixed" open={open}>
         <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
           <IconButton
             color="inherit"
@@ -45,18 +48,9 @@ const TopBar = ({ open, setOpen }) => {
           >
             <MenuIcon />
           </IconButton>
-          {open ? null : (
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              Kaadan Esports
-            </Typography>
-          )}
+          {open ? null : <Typography sx={{ flexGrow: 1 }}></Typography>}
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
     </>
   );
 };

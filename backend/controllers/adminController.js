@@ -9,7 +9,6 @@ import { saveImage } from "../middlewares/cloudinary.js";
 //route
 
 const getUserData = asyncHandler(async (req, res) => {
-  console.log("nithin");
   const users = await User.find();
 
   if (!users) {
@@ -26,9 +25,8 @@ const getUserData = asyncHandler(async (req, res) => {
 
 //@desc Blocking and Unblocking User
 const blockOrUnblockUser = asyncHandler(async (req, res) => {
-  console.log("nithin");
   const { email } = req.body;
-  console.log(email);
+
   if (!email) {
     res.status(400);
     throw new Error("Cant block user at this time ");
@@ -55,7 +53,6 @@ const createTeam = asyncHandler(async (req, res) => {
   }
   let teamPhoto = null;
   if (req.file && req.file.buffer) {
-    console.log("entered");
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await saveImage(dataURI);
@@ -133,7 +130,6 @@ const getAcceptedRecruitment = asyncHandler(async (req, res) => {
     .populate("teamId");
 
   if (!accepptedRecruit) {
-    console.log("nithin");
     res.status(404);
     throw new Error("Server Error");
   }
@@ -143,33 +139,10 @@ const getAcceptedRecruitment = asyncHandler(async (req, res) => {
   });
 });
 
-// const createPlayer = asyncHandler(async (req, res) => {
-//   const { userId, role, salary, teamId, AcceptRecruitId } = req.body;
-//   const user = await User.findOne({ _id: userId });
-//   if (!user) {
-//     res.status(404);
-//     throw new Error("User not found");
-//   }
-//   user.role = "player";
-
-//   const newPlayer = await Player.create({
-//     userId: user._id,
-//     role,
-//     salary,
-//     teamId,
-//   });
-
-//   user.playerId = newPlayer._id;
-//   user.save();
-//   await AcceptRecruit.deleteOne({ _id: AcceptRecruitId });
-//   res.status(200).json({
-//     message: "success",
-//   });
-// });
 const createPlayer = asyncHandler(async (req, res) => {
   try {
     const { userId, role, salary, teamId, AcceptRecruitId } = req.body;
-    console.log(req.body);
+
     // Check if the user exists
     const user = await User.findOne({ _id: userId });
     if (!user) {

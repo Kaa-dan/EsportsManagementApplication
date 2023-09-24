@@ -8,7 +8,6 @@ const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const user = await User.findOne({ email });
   if (req.file && req.file.buffer) {
-    console.log("entered");
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await saveImage(dataURI);
@@ -36,55 +35,47 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 const acceptRecruitment = asyncHandler(async (req, res) => {
-  try {
-    const file = req.file;
-    const { recruitMentID, user_id, teamId } = req.body;
-    console.log("body", req.body);
-    if (!file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    if (!/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
-      console.log("nithin");
-      return res.status(400).json({ message: "Invalid file format" });
-    }
-
-    const videoPath = file.path;
-
-    const response = await saveVideo(videoPath);
-
-    if (!response) {
-      return res.status(500).json({ message: "Error uploading video " });
-    }
-
-    const recruit = await Recruit.findOne({ _id: recruitMentID });
-
-    if (!recruit) {
-      return res.status(404).json({ message: "Recruit not found" });
-    }
-
-    const acceptedRecruit = await AcceptRecruit.create({
-      video: response.secure_url,
-      recruitId: recruit._id,
-      userId: user_id,
-      accept: true,
-      teamId: teamId,
-    });
-
-    res.status(201).json({
-      message: "Recruitment accepted successfully",
-      data: acceptedRecruit,
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+  const file = req.file;
+  const { recruitMentID, user_id, teamId } = req.body;
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded" });
   }
+
+  if (!/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
+    return res.status(400).json({ message: "Invalid file format" });
+  }
+
+  const videoPath = file.path;
+
+  const response = await saveVideo(videoPath);
+
+  if (!response) {
+    return res.status(500).json({ message: "Error uploading video " });
+  }
+
+  const recruit = await Recruit.findOne({ _id: recruitMentID });
+
+  if (!recruit) {
+    return res.status(404).json({ message: "Recruit not found" });
+  }
+
+  const acceptedRecruit = await AcceptRecruit.create({
+    video: response.secure_url,
+    recruitId: recruit._id,
+    userId: user_id,
+    accept: true,
+    teamId: teamId,
+  });
+
+  res.status(201).json({
+    message: "Recruitment accepted successfully",
+    data: acceptedRecruit,
+  });
 });
 
 const getStream = asyncHandler(async (req, res) => {
-  console.log("nithin")
-  const streams = await Stream.find()
-  console.log(streams)
+  const streams = await Stream.find();
+
   if (streams) {
     res.status(200).json({
       message: "success",
@@ -92,4 +83,4 @@ const getStream = asyncHandler(async (req, res) => {
     });
   }
 });
-export { updateProfile, acceptRecruitment,getStream };
+export { updateProfile, acceptRecruitment, getStream };

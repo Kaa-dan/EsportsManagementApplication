@@ -4,7 +4,7 @@ import ButtonWrapper from "../../../components/user/form/Button";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 
 // Importing mui components
-import { Box, Grid, Typography, Container, Stack } from "@mui/material";
+import { Box, Grid, Typography, Container, Stack, CircularProgress } from "@mui/material";
 
 // Importing form redux store
 import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -29,7 +29,7 @@ const FORM_VALIDATION = Yup.object().shape({
 const ForgotPassword = () => {
   const dispatch = useDispatch(); // Redux dispatch function
   const navigate = useNavigate(); // Hook for navigation
-  const [otpForgotPassword] = useOtpForgotPasswordMutation(); // Mutation for sending OTP
+  const [otpForgotPassword, {isLoading}] = useOtpForgotPasswordMutation(); // Mutation for sending OTP
   // Submit Handler for sending OTP
   const submitHandler = async (values) => {
     try {
@@ -37,7 +37,7 @@ const ForgotPassword = () => {
       const response = await otpForgotPassword({ email }).unwrap(); // Send OTP request
       console.log(response);
       dispatch(setOtp(response.otp)); // Update the OTP in Redux state
-      dispatch(setRegisterCredentials({...response.data})); // Update user credentials in Redux state
+      dispatch(setRegisterCredentials({ ...response.data })); // Update user credentials in Redux state
       toast(response.message);
       navigate("/auth/forgot-password-otp"); // Navigate to the OTP verification page
     } catch (err) {
@@ -62,7 +62,11 @@ const ForgotPassword = () => {
 
               <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}></Grid>
               <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                <ButtonWrapper>Sent OTP</ButtonWrapper>
+                {isLoading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <ButtonWrapper>Sent OTP</ButtonWrapper>
+                )}
               </Grid>
               <Grid
                 item

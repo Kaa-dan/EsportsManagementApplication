@@ -1,5 +1,5 @@
-import bgVideo from "../../../../assets/User/login/Login.mp4";
-import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useMemo } from "react";
 import {
   Avatar,
   Box,
@@ -8,48 +8,40 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Routes, Route, useLocation } from "react-router-dom";
+
+// custom component
 import Login from "../../../screens/user/auth/Login";
 import Register from "../../../screens/user/auth/Register";
 import ForgotPassword from "../../../screens/user/auth/ForgotPassword";
-import { useMemo } from "react";
 import RegisterOtp from "../../../screens/user/auth/RegisterOtp";
 import ForgotPasswordOtp from "../../../screens/user/auth/ForgotPasswordOtp";
 import ResetPassword from "../../../screens/user/auth/ResetPassword";
 
+import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
+import bgVideo from "../../../../assets/User/login/Login.mp4";
+import avatar from '../../../../assets/user/login/logo.jpg'
+
 const Auth = ({ children }) => {
-  const location = useLocation();
-  const pathname = location?.pathname;
+  // Define an array of routes and their corresponding components
   const list = useMemo(() => [
+    { title: "login", link: "login", component: <Login /> },
+    { title: "register", link: "register", component: <Register /> },
+    { title: "login", link: "forgot-password", component: <ForgotPassword /> },
+    { title: "login", link: "register-otp", component: <RegisterOtp /> },
     {
-      link: "login",
-      component: <Login />,
-    },
-    {
-      link: "register",
-      component: <Register />,
-    },
-    {
-      link: "forgot-password",
-      component: <ForgotPassword />,
-    },
-    {
-      link: "register-otp",
-      component: <RegisterOtp />,
-    },
-    {
+      title: "login",
       link: "forgot-password-otp",
       component: <ForgotPasswordOtp />,
     },
-    {
-      link: "reset-password",
-      component: <ResetPassword />,
-    },
+    { title: "login", link: "reset-password", component: <ResetPassword /> },
   ]);
+
+  // Access breakpoints from MUI theme
   const { breakpoints } = useTheme();
   const lg = useMediaQuery(breakpoints.down("lg"));
   const md = useMediaQuery(breakpoints.down("md"));
   const sm = useMediaQuery(breakpoints.down("sm"));
+
   return (
     <>
       <div
@@ -105,17 +97,19 @@ const Auth = ({ children }) => {
                         mb: "4px",
                         bgcolor: "#ffffff",
                       }}
+                      src={avatar}
                     >
                       <VideogameAssetOutlinedIcon />
                     </Avatar>{" "}
                     <Typography component="h1" variant="h4">
-                      Sign In
+                      Kaadan
                     </Typography>
                   </Box>
                 </Box>
                 <Box height={35} />
                 {children}
 
+                {/* Define routes for the components */}
                 <Routes>
                   {list.map((item) => (
                     <Route

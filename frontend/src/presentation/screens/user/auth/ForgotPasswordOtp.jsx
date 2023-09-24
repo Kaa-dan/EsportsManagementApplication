@@ -1,10 +1,15 @@
 // Importing custom components
-import AuthComponent from "../../../components/user/auth/Auth";
 import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 
 // Importing MUI (Material-UI) components
-import { Grid, Typography, Container, Stack } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
 
 // Importing from Redux store
 import { useOtpForgotPasswordMutation } from "../../../../application/slice/user/authApiSlice";
@@ -30,7 +35,7 @@ const FORM_VALIDATION = Yup.object().shape({
 const ForgotPasswordOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [otpFrogotPassword] = useOtpForgotPasswordMutation();
+  const [otpFrogotPassword, { isLoading }] = useOtpForgotPasswordMutation();
   const otpValues = useSelector((state) => state.auth.otp);
   const { tempUser } = useSelector((state) => state.auth);
   const [timer, setTimer] = useState(10);
@@ -92,7 +97,7 @@ const ForgotPasswordOtp = () => {
             </Grid>
             <Grid item xs={12} sx={{ ml: "3rem", mr: "3rem" }}>
               <Stack direction="row" spacing={2}>
-                {timer ? (
+                {isLoading ? null : timer ? (
                   <Typography
                     variant="body1"
                     component="span"
@@ -120,7 +125,11 @@ const ForgotPasswordOtp = () => {
             </Grid>
             <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
               {/* Button for form submission */}
-              <ButtonWrapper>Confirm</ButtonWrapper>
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <ButtonWrapper>Confirm</ButtonWrapper>
+              )}
             </Grid>
             <Grid
               item
