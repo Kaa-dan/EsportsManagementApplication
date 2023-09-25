@@ -4,9 +4,10 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../../../application/slice/user/authSlice"; // Redux action for setting user credentials
+import { CircularProgress } from "@mui/material";
 
 function GoogleButton() {
-  const [GoogleAuthApi] = useGoogleAuthMutation(); // Mutation function for Google OAuth
+  const [GoogleAuthApi, { isLoading }] = useGoogleAuthMutation(); // Mutation function for Google OAuth
   const navigate = useNavigate(); // React Router's navigate function
   const dispatch = useDispatch(); // Redux dispatch function
 
@@ -37,16 +38,19 @@ function GoogleButton() {
 
   return (
     <div className="App" style={{ paddingTop: 8 }}>
-      {/* Render the Google OAuth login button */}
-      <GoogleLogin
-        width={"100%"}
-        onSuccess={successHandler}
-        onError={() => {
-          toast("Login Failed");
-        }}
-        theme="filled_black"
-        text="continue_with"
-      />
+      {isLoading ? (
+        <CircularProgress size={20} />
+      ) : (
+        <GoogleLogin
+          width={"100%"}
+          onSuccess={successHandler}
+          onError={() => {
+            toast("Login Failed");
+          }}
+          theme="filled_black"
+          text="continue_with"
+        />
+      )}
     </div>
   );
 }

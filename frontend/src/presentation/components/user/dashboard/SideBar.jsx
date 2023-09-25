@@ -103,8 +103,9 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  
+  // bgcolor: "background.paper",
+  border: "0px solid #000",
   boxShadow: 24,
   p: 4,
 };
@@ -134,7 +135,6 @@ const SideBar = ({ open, setOpen }) => {
           link: "notification",
           component: <Notification />,
         },
-      
       ]);
     } else if (user.role === "admin") {
       list = useMemo(() => [
@@ -181,7 +181,7 @@ const SideBar = ({ open, setOpen }) => {
 
   return (
     <>
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={open} sx={{ border: "2px solid red" }}>
         <DrawerHeader
           sx={{
             display: "flex",
@@ -223,7 +223,7 @@ const SideBar = ({ open, setOpen }) => {
         <Box sx={{ textAlign: "center", mb: 3 }}>
           {open && (
             <Typography
-              sx={{ fontWeight: "bold", fontSize: "1.5rem", color: "#333" }}
+              sx={{ fontWeight: "bold", fontSize: "1.5rem", color: "#a359b0" }}
             >
               {user ? user.name : null}
             </Typography>
@@ -236,7 +236,15 @@ const SideBar = ({ open, setOpen }) => {
             <ListItem
               key={index}
               disablePadding
-              sx={{ display: "block", mt: 1, mb: 1 }}
+              sx={{
+                display: "block",
+                mt: 1,
+                mb: 1,
+                "&:hover": {
+                  backgroundColor: "#6e43a3",
+                },
+                backgroundColor: "#4a148c",
+              }}
             >
               <ListItemButton
                 sx={{

@@ -26,13 +26,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     getStreams: builder.mutation({
       query: (data) => {
-        console.log("abhirami")
+        console.log("abhirami");
         return {
           url: `${USERS_URL}/getStreams`,
           method: "GET",
           body: data,
         };
       },
+    }),
+    getProfile: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/profile`,
+        method: "PATCH",
+        body: data,
+      }),
     }),
   }),
 });
@@ -42,4 +49,5 @@ export const {
   useUpdateProfileMutation,
   useAcceptRecruitmentMutation,
   useGetStreamsMutation,
+  useGetProfileMutation,
 } = userApiSlice;

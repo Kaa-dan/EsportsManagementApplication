@@ -6,9 +6,12 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
+  CircularProgress,
   Divider,
   Unstable_Grid2 as Grid,
+  LinearProgress,
   Stack,
+  circularProgressClasses,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Yup from "yup";
@@ -36,11 +39,11 @@ const FORM_VALIDATION = Yup.object().shape({
     ),
   // profilePhoto: Yup.mixed().required("File is required"),
 });
-const AccountProfileDetails = () => {
+const AccountProfileDetails = ({handleClose}) => {
   const { user } = useSelector((state) => state.auth);
   console.log(user);
   const dispatch = useDispatch();
-  const [updatProfile] = useUpdateProfileMutation();
+  const [updatProfile, { isLoading }] = useUpdateProfileMutation();
   let [imageFile, setImageFile] = useState(null);
 
   const submitHandler = async (value) => {
@@ -53,6 +56,7 @@ const AccountProfileDetails = () => {
       const responce = await updatProfile(formData);
       console.log(responce);
       dispatch(setCredentials({ ...responce.data.data }));
+      handleClose(true)
     } catch (error) {
       console.log(error.message);
     }
@@ -108,7 +112,11 @@ const AccountProfileDetails = () => {
             </CardContent>
             <Divider />
             <CardActions sx={{ justifyContent: "flex-end" }}>
-              <ButtonWrapper>Save details</ButtonWrapper>
+              {isLoading ? (
+                <CircularProgress size={20} />
+              ) : (
+                <ButtonWrapper>Save details</ButtonWrapper>
+              )}
             </CardActions>
           </Card>
         </Form>

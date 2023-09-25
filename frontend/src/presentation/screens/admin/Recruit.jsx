@@ -133,9 +133,22 @@ const Recruit = () => {
     <Box>
       <Stack>
         <Container>
-          <div>
-            <Button onClick={handleOpen}>Send RecruitMent</Button>
-            <Modal
+          <Button
+            sx={{
+              backgroundColor: "#6e43a3", // Change to your desired background color
+              color: "#ffffff", // Change to your desired text color
+              borderRadius: "8px", // Rounded corners
+              padding: "12px 24px", // Padding
+              fontSize: "16px", // Text size
+              "&:hover": {
+                backgroundColor: "#330e62", // Change to the hover background color
+              },
+            }}
+            onClick={handleOpen}
+          >
+            Send RecruitMent
+          </Button>
+          <Modal
               open={open}
               onClose={handleClose}
               aria-labelledby="modal-modal-title"
@@ -183,7 +196,6 @@ const Recruit = () => {
                 </Formik>
               </Box>
             </Modal>
-          </div>
         </Container>
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
           <TableContainer sx={{ maxHeight: 440 }}>

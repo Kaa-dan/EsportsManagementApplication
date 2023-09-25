@@ -9,7 +9,7 @@ import { saveImage } from "../middlewares/cloudinary.js";
 //route
 
 const getUserData = asyncHandler(async (req, res) => {
-  const users = await User.find();
+  const users = await User.find({ role: "fan" });
 
   if (!users) {
     res.status(400);
@@ -32,6 +32,7 @@ const blockOrUnblockUser = asyncHandler(async (req, res) => {
     throw new Error("Cant block user at this time ");
   }
 
+  console.log(email);
   const user = await User.findOne({ email });
   if (user) {
     user.block = !user.block;
@@ -179,6 +180,20 @@ const createPlayer = asyncHandler(async (req, res) => {
   }
 });
 
+const filterFans = asyncHandler(async (req, res) => {
+  const { filter } = req.body;
+  if (!filter) {
+    res.status(404);
+    throw new Error("Server is busy");
+  }
+  if (filter === "blocked") {
+    const user = await User.find({ block: true, role: "fan" });
+    res.status(200).json({ message: "filtered", data: user });
+  } else {
+    const user = await User.find({ block: false, role: "fan" });
+    res.status(200).json({ message: "filtered", data: user });
+  }
+});
 export {
   getUserData,
   blockOrUnblockUser,
@@ -188,4 +203,5 @@ export {
   onGoingRecruitment,
   getAcceptedRecruitment,
   createPlayer,
+  filterFans,
 };

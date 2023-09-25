@@ -126,7 +126,7 @@ const ForgotPasswordOtp = () => {
             <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
               {/* Button for form submission */}
               {isLoading ? (
-                <CircularProgress />
+                <CircularProgress size={20} />
               ) : (
                 <ButtonWrapper>Confirm</ButtonWrapper>
               )}

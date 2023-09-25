@@ -5,32 +5,25 @@ import { Box, Container, Stack, Unstable_Grid2 as Grid } from "@mui/material";
 
 const Account = () => {
   return (
-    <div
-      style={{
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        py: 8,
         backgroundSize: "cover",
         height: "50vh",
-        color: "#f5f5f5",
-        // backgroundColor: "black",
+
         background: `url(${profilebg})`,
-        // backgroundRepeat:"no-repeat"
       }}
     >
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Stack spacing={3}>
-            <AccountProfileDetails />
+      <Container maxWidth="lg">
+        <Stack spacing={3}>
+          <AccountProfileDetails />
 
-            {/* <AccountProfile /> */}
-          </Stack>
-        </Container>
-      </Box>
-    </div>
+          {/* <AccountProfile /> */}
+        </Stack>
+      </Container>
+    </Box>
   );
 };
 export default Account;

@@ -21,6 +21,7 @@ import {
   CardActions,
   Unstable_Grid2,
   CardMedia,
+  CircularProgress,
 } from "@mui/material";
 import * as Yup from "yup";
 import { useCreateTeamMutation } from "../../../application/slice/admin/adminApiSlice";
@@ -61,8 +62,8 @@ const Teams = () => {
   const [image, setImageFile] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [createTeamApi] = useCreateTeamMutation();
-  const [getTeamApi] = useGetTeamMutation();
+  const [createTeamApi, { isLoading }] = useCreateTeamMutation();
+  const [getTeamApi, { isLoading: pageLoading }] = useGetTeamMutation();
   const getTeamHandler = async () => {
     const responce = await getTeamApi();
     setTeams(responce.data.data);
@@ -70,7 +71,7 @@ const Teams = () => {
   useEffect(() => {
     getTeamHandler();
   }, []);
-  const head = ["No", "Avatar", "Team-Name", "Strength"];
+  const head = ["No", "Avatar", "Team-Name", "Strength", ""];
   const submitHandler = async (value) => {
     try {
       const formData = new FormData();
@@ -78,121 +79,175 @@ const Teams = () => {
       formData.append("strength", value.strength);
       formData.append("teamPhoto", image);
       const responce = await createTeamApi(formData);
+      handleClose();
       console.log(responce);
     } catch (error) {
       console.log(error);
     }
   };
   return (
-    <Box>
-      <Stack>
-        <Container>
-          <div>
-            <Button onClick={handleOpen}>Create Team</Button>
-            <Modal
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={style}>
-                <Formik
-                  initialValues={{ ...INITIAL_FORM_STATE }}
-                  validationSchema={FORM_VALIDATION}
-                  onSubmit={submitHandler}
+    <>
+      {pageLoading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center", // Horizontally center
+            alignItems: "center", // Vertically center
+            height: "100vh", // Set the height of the container to the viewport height
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box>
+          <Stack>
+            <Container>
+              <div>
+                <Button
+                  sx={{
+                    backgroundColor: "#6e43a3", // Change to your desired background color
+                    color: "#ffffff", // Change to your desired text color
+                    borderRadius: "8px", // Rounded corners
+                    padding: "12px 24px", // Padding
+                    fontSize: "16px", // Text size
+                    "&:hover": {
+                      backgroundColor: "#330e62", // Change to the hover background color
+                    },
+                  }}
+                  onClick={handleOpen}
                 >
-                  <Form encType="multipart/form-data">
-                    <Card>
-                      <CardHeader subheader="Enter Team Details" />
+                  Create Team
+                </Button>
+                <Modal
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box sx={style}>
+                    <Formik
+                      initialValues={{ ...INITIAL_FORM_STATE }}
+                      validationSchema={FORM_VALIDATION}
+                      onSubmit={submitHandler}
+                    >
+                      <Form encType="multipart/form-data">
+                        <Card>
+                          <CardHeader subheader="Enter Team Details" />
 
-                      <CardContent sx={{ pt: 0 }}>
-                        <Box sx={{ m: -1.5 }}>
-                          <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                              <TextfieldWrapper name="team" label="Team-name" />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                              <TextfieldWrapper
-                                name="strength"
-                                label="Strength"
-                              />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                              <input
-                                required
-                                hidden222
-                                id="team"
-                                name="teamPhoto"
-                                type="file"
-                                onChange={(event) => {
-                                  setImageFile(event.currentTarget.files[0]);
-                                }}
-                              />
-                              
-                              <Button variant="outlined">
-                                <label htmlFor="team">Upload image</label>
-                              </Button>
-                              <Card sx={{ maxWidth: 345 }}>
-                                {/* <CardMedia
-                                  sx={{ height: 140 }}
-                                  // src={
-                                  //   imageFile ? imageFile : user.profilePhoto
-                                  // }
-                                  title="Profile photo"
-                                /> */}
-                                {/* {console.log(user.profilePhoto)} */}
-                              </Card>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </CardContent>
-                      <Divider />
-                      <CardActions sx={{ justifyContent: "flex-end" }}>
-                        <ButtonWrapper>Save details</ButtonWrapper>
-                      </CardActions>
-                    </Card>
-                  </Form>
-                </Formik>
-              </Box>
-            </Modal>
-          </div>
+                          <CardContent sx={{ pt: 0 }}>
+                            <Box sx={{ m: -1.5 }}>
+                              <Grid container spacing={3}>
+                                <Grid item xs={12} md={6}>
+                                  <TextfieldWrapper
+                                    name="team"
+                                    label="Team-name"
+                                  />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                  <TextfieldWrapper
+                                    name="strength"
+                                    label="Strength"
+                                  />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                  <input
+                                    required
+                                    hidden
+                                    id="team"
+                                    name="teamPhoto"
+                                    type="file"
+                                    onChange={(event) => {
+                                      setImageFile(
+                                        event.currentTarget.files[0]
+                                      );
+                                    }}
+                                  />
 
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {head.map((value) => (
-                      <TableCell key={value}>{value}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+                                  <Button variant="outlined">
+                                    <label htmlFor="team">Upload image</label>
+                                  </Button>
+                                  <Card sx={{ maxWidth: 345 }}>
+                                    {/* <CardMedia
+                            sx={{ height: 140 }}
+                            // src={
+                            //   imageFile ? imageFile : user.profilePhoto
+                            // }
+                            title="Profile photo"
+                          /> */}
+                                    {/* {console.log(user.profilePhoto)} */}
+                                  </Card>
+                                </Grid>
+                              </Grid>
+                            </Box>
+                          </CardContent>
+                          <Divider />
+                          <CardActions sx={{ justifyContent: "flex-end" }}>
+                            {isLoading ? (
+                              <CircularProgress size={20} />
+                            ) : (
+                              <ButtonWrapper>Save details</ButtonWrapper>
+                            )}
+                          </CardActions>
+                        </Card>
+                      </Form>
+                    </Formik>
+                  </Box>
+                </Modal>
+              </div>
 
-                <TableBody>
-                  {teams.map((team, index) => {
-                    console.log(team);
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>
-                          <Avatar alt="profile avatar" src={team.teamPhoto} />
-                        </TableCell>
-                        <TableCell>{team.team}</TableCell>
-                        <TableCell>{team.strength}</TableCell>
-                        <TableCell>
-                          <Button>Block</Button>
-                        </TableCell>
+              <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                <TableContainer sx={{ maxHeight: 440 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        {head.map((value) => (
+                          <TableCell key={value}>{value}</TableCell>
+                        ))}
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Container>
-        
-      </Stack>
-    </Box>
+                    </TableHead>
+
+                    <TableBody>
+                      {teams.map((team, index) => {
+                        console.log(team);
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>
+                              <Avatar
+                                alt="profile avatar"
+                                src={team.teamPhoto}
+                              />
+                            </TableCell>
+                            <TableCell>{team.team}</TableCell>
+                            <TableCell>{team.strength}</TableCell>
+                            <TableCell>
+                              <Button
+                                sx={{
+                                  backgroundColor: "#6e43a3", // Change to your desired background color
+                                  color: "#ffffff", // Change to your desired text color
+                                  borderRadius: "8px", // Rounded corners
+                                  padding: "12px 24px", // Padding
+                                  fontSize: "16px", // Text size
+                                  "&:hover": {
+                                    backgroundColor: "#330e62", // Change to the hover background color
+                                  },
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Container>
+          </Stack>
+        </Box>
+      )}
+    </>
   );
 };
 

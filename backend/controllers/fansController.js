@@ -24,7 +24,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "User updated successfully",
       data: {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -83,4 +83,19 @@ const getStream = asyncHandler(async (req, res) => {
     });
   }
 });
-export { updateProfile, acceptRecruitment, getStream };
+const getProfile = asyncHandler(async (req, res) => {
+  console.log("nithin raj s ");
+  const { id } = req.body;
+  if (!id) {
+    res.status(404);
+    throw new Error("can get credential right now login again");
+  }
+  const user = await User.findOne({ _id: id });
+  if (user) {
+    res.status(200).json({ message: "Succes", data: user });
+  } else {
+    res.status(404);
+    throw new Error("Server Busy");
+  }
+});
+export { updateProfile, acceptRecruitment, getStream, getProfile };

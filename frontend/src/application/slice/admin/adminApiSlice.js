@@ -63,6 +63,16 @@ export const adminApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    filterFans: builder.mutation({
+      query: (data) => {
+        console.log(data)
+        return {
+          url: `${USERS_URL}/filterFans`,
+          method: "PATCH",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -76,4 +86,5 @@ export const {
   useOnGoingRecruitMutation,
   useGetAcceptedRecruitmentMutation,
   useCreatePlayerMutation,
+  useFilterFansMutation,
 } = adminApi;
