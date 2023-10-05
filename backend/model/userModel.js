@@ -27,6 +27,12 @@ const userSchema = mongoose.Schema(
     },
     profilePhoto: {
       type: String,
+      default:
+        "https://res.cloudinary.com/dikqlipwc/image/upload/v1695717710/abf1qqroqpksib05tu3d.jpg",
+    },
+    online: {
+      type: String,
+      default: false,
     },
     playerId: {
       type: mongoose.Types.ObjectId,

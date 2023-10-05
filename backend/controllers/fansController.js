@@ -4,6 +4,7 @@ import AcceptRecruit from "../model/acceptRecruitModel.js";
 import { saveImage, saveVideo } from "../middlewares/cloudinary.js";
 import Recruit from "../model/recruitModel.js";
 import Stream from "../model/streamModel.js";
+
 const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const user = await User.findOne({ email });
@@ -35,8 +36,11 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 const acceptRecruitment = asyncHandler(async (req, res) => {
+  console.log("body", req.body);
   const file = req.file;
+  console.log(file);
   const { recruitMentID, user_id, teamId } = req.body;
+  console.log(user_id);
   if (!file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -58,6 +62,7 @@ const acceptRecruitment = asyncHandler(async (req, res) => {
   if (!recruit) {
     return res.status(404).json({ message: "Recruit not found" });
   }
+  console.log("recruit", recruit);
 
   const acceptedRecruit = await AcceptRecruit.create({
     video: response.secure_url,

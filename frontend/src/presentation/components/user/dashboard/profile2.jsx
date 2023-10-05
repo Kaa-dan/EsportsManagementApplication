@@ -21,10 +21,12 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  bgcolor: "#330e62",
+  border: "7px solid #6e43a3",
   boxShadow: 24,
-  p: 4,
+  p: 7,
+  borderRadius: "10px",
+  color: "white",
 };
 const AccountProfile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -37,7 +39,7 @@ const AccountProfile = () => {
     const responce = await getProfileApi({ id: user._id });
     setProfileData(responce.data.data);
   };
- 
+
   useEffect(() => {
     getProfileHandler();
   }, []);
@@ -118,7 +120,7 @@ const AccountProfile = () => {
               }}
             >
               <Typography color="text.secondary" variant="body2">
-                Email : {profileData?.email}
+                {profileData?.email}
               </Typography>
               <Typography color="text.secondary" variant="body2">
                 Role : {profileData?.role}

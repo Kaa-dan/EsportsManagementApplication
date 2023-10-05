@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   Divider,
@@ -15,6 +15,7 @@ import {
   Modal,
 } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
+import { useLocation } from "react-router-dom";
 import ProfileImage from "../../../../assets/user/profile/profile.jpeg";
 import banner from "../../../../assets/user/dashboard/banner.gif";
 // mui icons
@@ -23,7 +24,6 @@ import LiveTvIcon from "@mui/icons-material/LiveTv";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import LogoutIcon from "@mui/icons-material/Logout";
-import LiveTvTwoToneIcon from "@mui/icons-material/LiveTvTwoTone";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import Person4Icon from "@mui/icons-material/Person4";
 import MenuOpenTwoToneIcon from "@mui/icons-material/MenuOpenTwoTone";
@@ -32,7 +32,7 @@ import MenuOpenTwoToneIcon from "@mui/icons-material/MenuOpenTwoTone";
 import Profile from "../../../screens/user/home/Profile";
 import Notification from "../../../screens/user/home/Notification";
 import LiveCorner from "../../../screens/user/home/LiveCorner";
-
+import ChatUI from "../../../screens/user/home/Chat";
 // custom player component
 import LiveSetup from "../../../screens/player/LiveSetup";
 import Live from "../../../screens/player/Live";
@@ -40,8 +40,8 @@ import Live from "../../../screens/player/Live";
 // custom admin component
 import Fans from "../../../screens/admin/Fans";
 import Teams from "../../../screens/admin/Teams";
-import Recruit from "../../../screens/admin/Recruit";
-
+import MainRecruit from "../../../screens/admin/MainRecruit";
+import Players from "../../../screens/admin/Players";
 // redux store
 import { logout } from "../../../../application/slice/user/authSlice";
 import { useLogoutMutation } from "../../../../application/slice/user/authApiSlice";
@@ -50,6 +50,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useMemo } from "react";
+import AddHighlights from "../../../screens/admin/AddHighlights";
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -103,11 +104,12 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  
-  // bgcolor: "background.paper",
-  border: "0px solid #000",
+  bgcolor: "#330e62",
+  border: "7px solid #6e43a3",
   boxShadow: 24,
-  p: 4,
+  p: 7,
+  borderRadius: "10px",
+  color: "white",
 };
 
 const SideBar = ({ open, setOpen }) => {
@@ -118,6 +120,8 @@ const SideBar = ({ open, setOpen }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
   console.log(user);
   let list = [];
   if (user) {
@@ -135,6 +139,12 @@ const SideBar = ({ open, setOpen }) => {
           link: "notification",
           component: <Notification />,
         },
+        {
+          title: "Notification",
+          icon: <NotificationsIcon />,
+          link: "chat",
+          component: <ChatUI />,
+        },
       ]);
     } else if (user.role === "admin") {
       list = useMemo(() => [
@@ -144,17 +154,30 @@ const SideBar = ({ open, setOpen }) => {
           link: "fans",
           component: <Fans />,
         },
-        {
-          title: "Recruit",
-          icon: <ContactMailIcon />,
-          link: "recruit",
-          component: <Recruit />,
-        },
+
         {
           title: "Teams",
           icon: <Diversity1Icon />,
           link: "teams",
           component: <Teams />,
+        },
+        {
+          title: "Recruit",
+          icon: <ContactMailIcon />,
+          link: "recruit",
+          component: <MainRecruit />,
+        },
+        {
+          title: "Players",
+          icon: <ContactMailIcon />,
+          link: "player",
+          component: <Players />,
+        },
+        {
+          title: "Players",
+          icon: <ContactMailIcon />,
+          link: "highlights",
+          component: <AddHighlights />,
         },
       ]);
     } else {
@@ -171,13 +194,20 @@ const SideBar = ({ open, setOpen }) => {
 
   const logOutHandler = async () => {
     try {
-      await logoutApiCall().unwrap();
+      await logoutApiCall({ id: user._id }).unwrap();
       dispatch(logout());
       navigate("/auth/login");
     } catch (err) {
       toast(err);
     }
   };
+
+  useEffect(() => {
+    if (!user) {
+      console.log(user);
+      navigate("/auth/login");
+    }
+  }, [user]);
 
   return (
     <>
@@ -202,7 +232,7 @@ const SideBar = ({ open, setOpen }) => {
           <Tooltip>
             <Avatar
               onClick={profileOpenHandler}
-              src={ProfileImage}
+              src={user.profilePhoto}
               {...(open && { sx: { width: 100, height: 100 } })}
             />
           </Tooltip>
@@ -243,9 +273,12 @@ const SideBar = ({ open, setOpen }) => {
                 "&:hover": {
                   backgroundColor: "#6e43a3",
                 },
-                backgroundColor: "#4a148c",
+                backgroundColor:
+                  location.pathname == `/${item.link}` ? "#6e43a3" : "",
               }}
             >
+              {console.log(location.pathname)}
+              {console.log(item.link)}
               <ListItemButton
                 sx={{
                   minHeight: 48,

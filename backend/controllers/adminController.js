@@ -4,24 +4,8 @@ import Team from "../model/teamModel.js";
 import Recruit from "../model/recruitModel.js";
 import AcceptRecruit from "../model/acceptRecruitModel.js";
 import Player from "../model/playerModel.js";
+import mongoose from "mongoose";
 import { saveImage } from "../middlewares/cloudinary.js";
-//@desc Get User data
-//route
-
-const getUserData = asyncHandler(async (req, res) => {
-  const users = await User.find({ role: "fan" });
-
-  if (!users) {
-    res.status(400);
-    throw new Error("Couldn't find users right now");
-  } else {
-    res.status(200).json({
-      message: "Users fetched successfully",
-      data: users,
-      success: true,
-    });
-  }
-});
 
 //@desc Blocking and Unblocking User
 const blockOrUnblockUser = asyncHandler(async (req, res) => {
@@ -75,7 +59,15 @@ const createTeam = asyncHandler(async (req, res) => {
   }
 });
 const getTeams = asyncHandler(async (req, res) => {
-  const teams = await Team.find();
+  const { query } = req.body;
+  const userQuery = {};
+  if (query) {
+    console.log(query);
+    const searchRegex = new RegExp(query, "i");
+    userQuery.$or = [{ team: { $regex: searchRegex } }];
+  }
+
+  const teams = await Team.find(userQuery);
   if (!teams) {
     res.status(404);
     throw new Error(`server busy`);
@@ -89,55 +81,128 @@ const getTeams = asyncHandler(async (req, res) => {
 
 const recruitPlayer = asyncHandler(async (req, res) => {
   const { date, team, salary, role } = req.body;
+
   if (!date && !team && !salary && !role) {
     res.status(500);
     throw new Error("Server busy can't sent right now");
   } else {
-    const recruit = await Recruit.create({
-      team,
-      salary,
-      role,
-      endDate: date,
-      send: true,
-    });
-    if (recruit) {
+    const Recruits = await Recruit.find({ team: team });
+
+    const TeamV = await Team.findOne({ _id: team });
+
+    const noOfvacansy = TeamV.strength - TeamV.players.length;
+
+    if (Number(noOfvacansy) >= Number(Recruits.length)) {
+      const recruit = await Recruit.create({
+        team,
+        salary,
+        role,
+        endDate: date,
+        send: true,
+      });
       res.status(201).json({
         message: "Recruitment sent successfully",
         data: recruit,
       });
     } else {
-      res.status(500);
-      throw new Error("Bad connection");
+      console.log("error");
+
+      res.status(404);
+      throw new Error("Already Sent recruitments for the vacansy");
     }
   }
 });
-const onGoingRecruitment = asyncHandler(async (req, res) => {
-  const onGoingRecruitment = await Recruit.find({ send: true }).populate(
-    "team"
-  );
 
-  if (onGoingRecruitment) {
+const onGoingRecruitment = asyncHandler(async (req, res) => {
+  let { query } = req.body;
+
+  const pipeline = [
+    {
+      $lookup: {
+        from: "teams",
+        localField: "team",
+        foreignField: "_id",
+        as: "teamData",
+      },
+    },
+    {
+      $match: {
+        send: true,
+        $or: [
+          { "teamData.team": { $regex: new RegExp(query, "i") } },
+          { role: { $regex: new RegExp(query, "i") } },
+        ],
+      },
+    },
+  ];
+
+  const Recruitment = await Recruit.aggregate(pipeline);
+  if (Recruitment) {
     res.status(201).json({
       message: "Success",
-      data: onGoingRecruitment,
+      data: Recruitment,
     });
   }
 });
 
 const getAcceptedRecruitment = asyncHandler(async (req, res) => {
-  const accepptedRecruit = await AcceptRecruit.find()
-    .populate("userId")
-    .populate("recruitId")
-    .populate("teamId");
+  const { query } = req.body;
+  console.log(query);
 
-  if (!accepptedRecruit) {
-    res.status(404);
-    throw new Error("Server Error");
+  const pipeline = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userData",
+      },
+    },
+    {
+      $lookup: {
+        from: "recruits",
+        localField: "recruitId",
+        foreignField: "_id",
+        as: "recruitData",
+      },
+    },
+    {
+      $lookup: {
+        from: "teams",
+        localField: "teamId",
+        foreignField: "_id",
+        as: "teamData",
+      },
+    },
+    {
+      $match: {
+        accept: true,
+        $or: [
+          { "userData.name": { $regex: new RegExp(query, "i") } },
+          { "recruitData.role": { $regex: new RegExp(query, "i") } },
+          { "teamData.team": { $regex: new RegExp(query, "i") } },
+        ],
+      },
+    },
+  ];
+
+  try {
+    const acceptedRecruit = await AcceptRecruit.aggregate(pipeline);
+    if (!acceptedRecruit) {
+      res.status(404);
+      throw new Error("No data found");
+    }
+
+    res.status(200).json({
+      message: "Data fetched successfully",
+      data: acceptedRecruit,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
   }
-  res.status(201).json({
-    message: "Data fetched succesfully",
-    data: accepptedRecruit,
-  });
 });
 
 const createPlayer = asyncHandler(async (req, res) => {
@@ -180,19 +245,176 @@ const createPlayer = asyncHandler(async (req, res) => {
   }
 });
 
-const filterFans = asyncHandler(async (req, res) => {
-  const { filter } = req.body;
-  if (!filter) {
+const editTeam = asyncHandler(async (req, res) => {
+  const { id, strength, team } = req.body;
+  if (!id) {
     res.status(404);
-    throw new Error("Server is busy");
+    throw new Error("try one more time");
   }
-  if (filter === "blocked") {
-    const user = await User.find({ block: true, role: "fan" });
-    res.status(200).json({ message: "filtered", data: user });
-  } else {
-    const user = await User.find({ block: false, role: "fan" });
-    res.status(200).json({ message: "filtered", data: user });
+
+  const updatingTeam = await Team.findOne({ _id: id });
+  if (!updatingTeam) {
+    res.status(404);
+    throw new Error("Server busy");
   }
+  if (req.file && req.file.buffer) {
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    const cldRes = await saveImage(dataURI);
+    updatingTeam.teamPhoto = cldRes.secure_url || updatingTeam.teamPhoto;
+  }
+  updatingTeam.team = team || updatingTeam.team;
+  updatingTeam.strength = strength || updatingTeam.strength;
+  await updatingTeam.save();
+  res.status(200).json({ message: "succesfull" });
+});
+
+const deleteTeam = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    res.status(404);
+    throw new Error("Cant delete now");
+  }
+  await Team.deleteOne({ _id: id });
+  res.status(200).json({ message: "Team Deleted" });
+});
+
+const updateRecruits = asyncHandler(async (req, res) => {
+  console.log("nithin");
+  const { id, salary, role, editDate } = req.body;
+
+  if (!id) {
+    res.status(404);
+    throw new Error("ID required try again later");
+  }
+  const recruit = await Recruit.findOne({ _id: id });
+  if (!recruit) {
+    res.status(404);
+    throw new Error("NO recruitments find");
+  }
+
+  recruit.role = role || recruit.role;
+  recruit.salary = salary || recruit.salary;
+  recruit.date = editDate || recruit.endDate;
+  await recruit.save();
+  res.status(200).json({ message: "succesfull" });
+});
+
+const deleteRecruits = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    res.status(404);
+    throw new Error("Can delete at this time");
+  }
+  await Recruit.deleteOne({ _id: id });
+  res.status(200).json({ message: "Success" });
+});
+
+const getUserData = asyncHandler(async (req, res) => {
+  console.log(req.body);
+  const { filterFans, query } = req.body;
+
+  // Create a MongoDB query object to filter users based on the query
+  const userQuery = {
+    role: "fan",
+  };
+
+  if (filterFans === "blocked") {
+    userQuery.block = true;
+  } else if (filterFans === "notBlocked") {
+    userQuery.block = false;
+  }
+
+  if (query) {
+    const searchRegex = new RegExp(query, "i");
+    userQuery.$or = [
+      { username: { $regex: searchRegex } },
+      { email: { $regex: searchRegex } },
+    ];
+  }
+
+  try {
+    const data = await User.find(userQuery);
+    res.status(200).json({ message: "Success", data });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+const getPlayer = asyncHandler(async (req, res) => {
+  console.log(req.query);
+  const { search, filter, page } = req.query;
+
+  const pageSize = 6;
+  let PageNumber = parseInt(page) || 1;
+  const skip = (PageNumber - 1) * pageSize;
+
+  const pipeline = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userData",
+      },
+    },
+    {
+      $lookup: {
+        from: "teams",
+        localField: "teamId",
+        foreignField: "_id",
+        as: "teamData",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          { "userData.name": { $regex: new RegExp(search, "i") } },
+          { "userData.email": { $regex: new RegExp(search, "i") } },
+          { role: { $regex: new RegExp(search, "i") } },
+          { "teamData.team": { $regex: new RegExp(search, "i") } },
+        ],
+      },
+    },
+  ];
+  if (filter !== "all") {
+    const teamId = new mongoose.Types.ObjectId(filter);
+
+    pipeline.push({
+      $match: {
+        "teamData._id": teamId,
+      },
+    });
+  }
+  const countPipeline = [...pipeline, { $count: "total" }];
+  const countResult = await Player.aggregate(countPipeline);
+
+  const totalPlayers = countResult.length > 0 ? countResult[0].total : 0;
+
+  const totalPages = Math.ceil(totalPlayers / pageSize);
+
+  pipeline.push({ $skip: skip }, { $limit: pageSize });
+
+  const player = await Player.aggregate(pipeline);
+
+  res.status(200).json({ message: "Success", data: player, totalPages });
+});
+
+const getTeamBasedOnVacancy = asyncHandler(async (req, res) => {
+  console.log("nithin");
+  const teams = await Team.find({
+    $expr: {
+      $lt: [{ $size: "$players" }, "$strength"],
+    },
+  });
+
+  res.status(200).json({ message: "success", data: teams });
+});
+
+const addHighlight = asyncHandler(async (req, res) => {
+  
+  console.log(req.body);
 });
 export {
   getUserData,
@@ -203,5 +425,11 @@ export {
   onGoingRecruitment,
   getAcceptedRecruitment,
   createPlayer,
-  filterFans,
+  editTeam,
+  deleteTeam,
+  updateRecruits,
+  deleteRecruits,
+  getPlayer,
+  getTeamBasedOnVacancy,
+  addHighlight,
 };

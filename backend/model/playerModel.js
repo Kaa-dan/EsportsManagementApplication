@@ -22,6 +22,7 @@ const playerSchema = mongoose.Schema(
       ref: "Team",
       required: true,
     },
+  
   },
   {
     timestamps: true,

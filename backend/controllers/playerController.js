@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Stream from "../model/streamModel.js";
 import { saveImage } from "../middlewares/cloudinary.js";
 const createLive = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const { playerId, title, description } = req.body;
   let thumbnail = null;
   if (req.file && req.file.buffer) {

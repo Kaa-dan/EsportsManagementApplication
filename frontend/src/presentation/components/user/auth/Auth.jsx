@@ -19,7 +19,7 @@ import ResetPassword from "../../../screens/user/auth/ResetPassword";
 
 import VideogameAssetOutlinedIcon from "@mui/icons-material/VideogameAssetOutlined";
 import bgVideo from "../../../../assets/User/login/Login.mp4";
-import avatar from '../../../../assets/user/login/logo.jpg'
+import avatar from "../../../../assets/user/login/logo.jpg";
 
 const Auth = ({ children }) => {
   // Define an array of routes and their corresponding components

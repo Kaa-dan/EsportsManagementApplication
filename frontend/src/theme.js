@@ -20,12 +20,10 @@ const darkTheme = createTheme({
     },
     background: {
       // default: '#330e62',
-      paper: '#330e62',
+      paper: "#330e62",
     },
   },
-  props: {
-  
-  }
+  props: {},
 });
 
 export default darkTheme;

@@ -10,7 +10,7 @@ export const adminApi = apiSlice.injectEndpoints({
     getFans: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/fans`,
-        method: "GET",
+        method: "put",
         body: data,
       }),
     }),
@@ -30,8 +30,8 @@ export const adminApi = apiSlice.injectEndpoints({
     }),
     getTeam: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/team`,
-        method: "GET",
+        url: `${USERS_URL}/teams`,
+        method: "POST",
         body: data,
       }),
     }),
@@ -44,15 +44,15 @@ export const adminApi = apiSlice.injectEndpoints({
     }),
     onGoingRecruit: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/recruit`,
-        method: "GET",
+        url: `${USERS_URL}/recruits`,
+        method: "POST",
         body: data,
       }),
     }),
     getAcceptedRecruitment: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/getAcceptedRecruitment`,
-        method: "GET",
+        method: "POST",
         body: data,
       }),
     }),
@@ -63,15 +63,60 @@ export const adminApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    filterFans: builder.mutation({
+    editTeam: builder.mutation({
       query: (data) => {
-        console.log(data)
+        console.log(data);
         return {
-          url: `${USERS_URL}/filterFans`,
+          url: `${USERS_URL}/team`,
           method: "PATCH",
           body: data,
         };
       },
+    }),
+    deleteTeam: builder.mutation({
+      query: (data) => {
+        console.log(data);
+        return {
+          url: `${USERS_URL}/team`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
+    updateRecruits: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/recruit`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    deleteRecruits: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/recruit`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    getPlayer: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${USERS_URL}/player?search=${data.query}&filter=${data.filterValue}&page=${data.page}`,
+          method: "GET",
+        };
+      },
+    }),
+    getTeamBasedONVacansy: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/team`,
+        method: "GET",
+      }),
+    }),
+    addHighligh: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/highlight`,
+        method: "POST",
+        body: data,
+      }),
     }),
   }),
 });
@@ -86,5 +131,12 @@ export const {
   useOnGoingRecruitMutation,
   useGetAcceptedRecruitmentMutation,
   useCreatePlayerMutation,
-  useFilterFansMutation,
+
+  useEditTeamMutation,
+  useDeleteTeamMutation,
+  useUpdateRecruitsMutation,
+  useDeleteRecruitsMutation,
+  useGetPlayerMutation,
+  useGetTeamBasedONVacansyMutation,
+  useAddHighlighMutation
 } = adminApi;

@@ -90,7 +90,7 @@ const Register = () => {
                 <TextFieldWrapper
                   name="password"
                   label="Password"
-                  type="password"
+                 
                 />
               </Grid>
               <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>

@@ -10,17 +10,30 @@ import {
   onGoingRecruitment,
   getAcceptedRecruitment,
   createPlayer,
-  filterFans,
+  editTeam,
+  deleteTeam,
+  updateRecruits,
+  deleteRecruits,
+  getPlayer,
+  getTeamBasedOnVacancy,
+  addHighlight,
 } from "../controllers/adminController.js";
 
-router.get("/fans", getUserData);
+router.put("/fans", getUserData);
 router.patch("/fans", blockOrUnblockUser);
-router.patch("/filterFans", filterFans);
+
 router.post("/team", upload.single("teamPhoto"), createTeam);
-router.get("/team", getTeams);
+router.post("/teams", getTeams);
 router.post("/recruit", recruitPlayer);
-router.get("/recruit", onGoingRecruitment);
-router.get("/getAcceptedRecruitment", getAcceptedRecruitment);
+router.post("/recruits", onGoingRecruitment);
+router.post("/getAcceptedRecruitment", getAcceptedRecruitment);
 router.post("/createPlayer", createPlayer);
+router.patch("/team", upload.single("teamPhoto"), editTeam);
+router.put("/team", deleteTeam);
+router.put("/recruit", updateRecruits);
+router.patch("/recruit", deleteRecruits);
+router.get("/player", getPlayer);
+router.get("/team", getTeamBasedOnVacancy);
+router.post("/highlight", addHighlight);
 
 export default router;

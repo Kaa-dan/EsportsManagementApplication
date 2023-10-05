@@ -75,14 +75,14 @@ const AccountProfileDetails = ({handleClose}) => {
 
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ m: -1.5 }}>
-                <Grid container spacing={3}>
-                  <Grid xs={12} md={6}>
+                <Grid container spacing={3} direction="column">
+                  <Grid xs={12} md={12}>
                     <TextfieldWrapper name="name" label="Username" />
                   </Grid>
-                  <Grid xs={12} md={6}>
+                  <Grid xs={12} md={12}>
                     <TextfieldWrapper name="password" label="Password" />
                   </Grid>
-                  <Grid xs={12} md={6}>
+                  <Grid xs={12} md={12}>
                     <input
                       hidden
                       id="profilePhoto"
@@ -98,7 +98,7 @@ const AccountProfileDetails = ({handleClose}) => {
                       </label>
                     </Button>
                   </Grid>
-                  <Grid xs={12} md={6}>
+                  {/* <Grid xs={12} md={12}>
                     <Card sx={{ maxWidth: 345 }}>
                       <CardMedia
                         sx={{ height: 140 }}
@@ -106,7 +106,7 @@ const AccountProfileDetails = ({handleClose}) => {
                         title="Profile photo"
                       />
                     </Card>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Box>
             </CardContent>

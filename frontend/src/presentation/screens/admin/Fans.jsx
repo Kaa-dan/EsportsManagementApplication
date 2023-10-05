@@ -1,15 +1,6 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import {
   useBlockFanMutation,
   useGetFansMutation,
-  useFilterFansMutation,
 } from "../../../application/slice/admin/adminApiSlice";
 import { useEffect, useState } from "react";
 import {
@@ -22,9 +13,19 @@ import {
   LinearProgress,
   MenuItem,
   Select,
+  Container,
+  TableBody,
+  Paper,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
 } from "@mui/material";
+import Pagination from "../../components/user/dashboard/Pagination";
 const columns = [
-  { id: "no", label: "No", minWidth: 170 },
+ 
   { id: "avatar", label: "Avatar", minWidth: 100 },
   {
     id: "name",
@@ -41,25 +42,30 @@ const columns = [
 ];
 
 const Fans = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [filterFans, setFilterFans] = useState("");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [filterFans, setFilterFans] = useState("all");
+  const [query, setQuery] = useState();
   const [data, setData] = useState([]);
+
   const [blockFanApi, { isLoading: blockLoading }] = useBlockFanMutation();
-  const [filterFansApi, { isLoading: fansFilterLoading }] =
-    useFilterFansMutation();
   const [getUsersApi, { isLoading }] = useGetFansMutation();
 
   const getData = async () => {
-    const responce = await getUsersApi();
+
+    const responce = await getUsersApi({ query, filterFans, page });
     console.log(responce);
     setData(responce.data.data);
+    // }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  const indexOfLastData = page * rowsPerPage;
+  const indexOfFirstData = indexOfLastData - rowsPerPage;
+  const currentData = data.slice(indexOfFirstData, indexOfLastData);
 
+  const onPageChange = (pageNumber) => {
+    setPage(pageNumber);
+  };
   const blockHandler = async (email) => {
     try {
       const responce = await blockFanApi({ email });
@@ -69,131 +75,140 @@ const Fans = () => {
       console.log(error.message);
     }
   };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  // handler for filtering
-  const filterFansHandler = async (e) => {
-    try {
-      console.log(e.target.value);
-      if (e.target.value === "all") {
-        console.log(true);
-        setFilterFans(e.target.value);
-        getData();
-      } else {
-        const responce = await filterFansApi({ filter: e.target.value });
-        setFilterFans(e.target.value);
-        console.log(responce);
-        setData(responce.data.data);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  useEffect(() => {
+    getData();
+  }, [filterFans, page,query]);
 
   return (
     <>
-      {isLoading || fansFilterLoading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center", // Horizontally center
-            alignItems: "center", // Vertically center
-            height: "100vh", // Set the height of the container to the viewport height
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Select</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={filterFans}
-                label="Age"
-                onChange={filterFansHandler}
+      <Container
+        sx={{
+          position: "relative",
+          backgroundColor: "rgba(51, 14, 98, 0.4)",
+          padding: "40px 40px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          // height: lg ? (md ? (sm ? "120%" : "130%") : "140%") : "140%",
+          height: "310%",
+        }}
+      >
+        <Container>
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={2}
+            >
+              <TextField
+                variant="outlined"
+                value={query}
+                label="Search"
+                onChange={(e) => setQuery(e.target.value)}
+                style={{ flex: 1 }} // Adjust the width of the TextField
+              />
+              {/* <Button
+                variant="contained"
+                color="primary"
+                onClick={getData}
+                style={{ height: "56px" }}
               >
-                <MenuItem value="all">All</MenuItem>
-                <MenuItem value="blocked">Blocked</MenuItem>
-                <MenuItem value="notBlocked">Non-Blocked</MenuItem>
-              </Select>
-            </FormControl>
+                Search
+              </Button> */}
+            </Box>
+
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Select</InputLabel>
+                {console.log(filterFans)}
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={filterFans}
+                  label="Age"
+                  onChange={(e) => setFilterFans(e.target.value)}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="blocked">Blocked</MenuItem>
+                  <MenuItem value="notBlocked">Non-Blocked</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
           <Paper sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell key={column.id}>{column.label}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {data
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((user, index) => {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>
-                            <Avatar
-                              alt="profile avatar"
-                              src={user.profilePhoto}
-                            />
-                          </TableCell>
-                          <TableCell>{user.name}</TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>
-                            {blockLoading ? (
-                              <CircularProgress size={20} />
-                            ) : (
-                              <Button
-                                sx={{
-                                  backgroundColor: "#6e43a3",
-                                  color: "#ffffff",
-                                  borderRadius: "8px",
-                                  fontSize: "16px",
-                                  "&:hover": {
-                                    backgroundColor: "#330e62",
-                                  },
-                                }}
-                                onClick={() => {
-                                  blockHandler(user.email);
-                                }}
-                              >
-                                {user?.block ? "Unblock" : "Block"}
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
+                {isLoading ? (
+                  <LinearProgress />
+                ) : (
+                  <>
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell key={column.id}>{column.label}</TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {currentData.map((user, index) => {
+                        return (
+                          <TableRow key={index}>
+                          
+                            <TableCell>
+                              <Avatar
+                                alt="profile avatar"
+                                src={user.profilePhoto}
+                              />
+                            </TableCell>
+                            <TableCell>{user.name}</TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>
+                              {blockLoading ? (
+                                <CircularProgress size={20} />
+                              ) : (
+                                <Button
+                                  sx={{
+                                    backgroundColor: "#6e43a3",
+                                    color: "#ffffff",
+                                    borderRadius: "8px",
+                                    fontSize: "16px",
+                                    "&:hover": {
+                                      backgroundColor: "#330e62",
+                                    },
+                                  }}
+                                  onClick={() => {
+                                    blockHandler(user.email);
+                                  }}
+                                >
+                                  {user?.block ? "Unblock" : "Block"}
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </>
+                )}
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[15]}
-              component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
           </Paper>
-        </>
-      )}
+        </Container>
+        <Box  sx={{ position: "absolute", mt: 70 }}>
+          <Pagination
+            currentPage={page}
+            totalPages={Math.ceil(data.length / rowsPerPage)}
+            onPageChange={onPageChange}
+          />
+        </Box>
+      </Container>
     </>
   );
 };

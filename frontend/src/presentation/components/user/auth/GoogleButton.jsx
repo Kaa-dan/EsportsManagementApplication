@@ -26,9 +26,12 @@ function GoogleButton() {
 
         // Display a success toast message
         toast(response.message);
-
-        // Navigate to the home page
-        navigate("/");
+        if (response.data.role === "admin") {
+          // Navigate to the home page
+          navigate("/fans");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
       // Display an error

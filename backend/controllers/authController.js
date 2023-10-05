@@ -28,6 +28,8 @@ const loginUser = asyncHandler(async (req, res) => {
     generateToken(res, user._id);
     // Logging
     console.log(`User logged in: ${user.name}, ${user.email}`);
+    user.online = true;
+    await user.save();
     res.status(201).json({
       data: {
         _id: user._id,
@@ -80,7 +82,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
       // Logging
       console.log(`New user registered: ${user.name}, ${user.email}`);
-
+      user.online = true;
+      await user.save();
       res.status(201).json({
         data: {
           _id: user._id,
@@ -119,7 +122,8 @@ const googleAuth = asyncHandler(async (req, res) => {
 
       // Logging
       console.log(`User logged in: ${user.name}, ${user.email}`);
-
+      user.online = true;
+      await user.save();
       res.status(201).json({
         data: {
           _id: user._id,
@@ -143,7 +147,8 @@ const googleAuth = asyncHandler(async (req, res) => {
 
         // Logging
         console.log(`New User registered: ${newUser.name}, ${newUser.email}`);
-
+        newUser.online = true;
+        await newUser.save();
         res.status(201).json({
           data: {
             _id: newUser._id,
@@ -266,9 +271,10 @@ const changePassword = asyncHandler(async (req, res) => {
 
 // @desc  Logout user and clear cookie
 // route  POST /api/users/logout
-const logoutUser = (req, res) => {
-  // Clear the JWT cookie
-
+const logoutUser = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  console.log(id);
+  const user = await User.findOne({ _id: id });
   // Input Validation
   if (!res.cookie) {
     res.status(400);
@@ -280,13 +286,13 @@ const logoutUser = (req, res) => {
     httpOnly: true,
     expires: new Date(0),
   });
-
+  user.online = false;
+  await user.save();
   // Logging
   console.log("User logged out");
 
   res.status(200).json({ message: "User logged out" });
-};
-
+});
 export {
   loginUser,
   registerUser,

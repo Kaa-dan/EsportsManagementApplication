@@ -50,7 +50,7 @@ const Login = () => {
       dispatch(setCredentials({ ...res.data }));
 
       if (res.data.role === "admin") {
-        navigate("/admin");
+        navigate("/fans");
 
         console.log(res.data.role);
       } else {
