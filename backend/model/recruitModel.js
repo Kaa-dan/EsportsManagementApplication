@@ -24,6 +24,12 @@ const recruitSchema = mongoose.Schema(
       type: Date,
       required: false,
     },
+    acceptedBy:[
+      {
+        type:mongoose.Types.ObjectId,
+        ref:"User"
+      }
+    ]
   },
   {
     timestamps: true, // Adds createdAt and updatedAt timestamps to documents

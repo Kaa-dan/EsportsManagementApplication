@@ -4,6 +4,7 @@ import AcceptRecruit from "../model/acceptRecruitModel.js";
 import { saveImage, saveVideo } from "../middlewares/cloudinary.js";
 import Recruit from "../model/recruitModel.js";
 import Stream from "../model/streamModel.js";
+import Schedules from "../model/schedulModel.js";
 
 const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -36,7 +37,6 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 const acceptRecruitment = asyncHandler(async (req, res) => {
-  console.log("body", req.body);
   const file = req.file;
   console.log(file);
   const { recruitMentID, user_id, teamId } = req.body;
@@ -52,6 +52,12 @@ const acceptRecruitment = asyncHandler(async (req, res) => {
   const videoPath = file.path;
 
   const response = await saveVideo(videoPath);
+  if (response) {
+    await Recruit.updateOne(
+      { _id: recruitMentID },
+      { $push: { acceptedBy: user_id } }
+    );
+  }
 
   if (!response) {
     return res.status(500).json({ message: "Error uploading video " });
@@ -103,4 +109,14 @@ const getProfile = asyncHandler(async (req, res) => {
     throw new Error("Server Busy");
   }
 });
-export { updateProfile, acceptRecruitment, getStream, getProfile };
+
+
+const getSchedule = asyncHandler(async(req,res)=>{
+  console.log("nithin")
+  const schedule = await Schedules.find().populate();
+  res.status(200).json({
+    data:schedule,
+    message:"succsess"
+  })
+})
+export { updateProfile, acceptRecruitment, getStream, getProfile,getSchedule };

@@ -19,9 +19,11 @@ export const saveImage = async (image) => {
 
 export const saveVideo = async (video) => {
   try {
+    console.log("2",video)
     const response = await cloudinary.v2.uploader.upload(video, {
       resource_type: "video",
     });
+    console.log("nithin",response)
     return response;
   } catch (error) {
     console.log(error);

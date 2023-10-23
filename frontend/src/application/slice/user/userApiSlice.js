@@ -41,6 +41,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getMessage: builder.mutation({
+      query: (data) => ({
+        url: `/api/message`,
+        method: "GET",
+      }),
+    }),
+    getSchedules: builder.mutation({
+      query: (data) => {
+        console.log("nihtin raj")
+        return { url: `${USERS_URL}/schedule`,
+         method: "GET" };
+      },
+    }),
   }),
 });
 
@@ -50,4 +63,6 @@ export const {
   useAcceptRecruitmentMutation,
   useGetStreamsMutation,
   useGetProfileMutation,
+  useGetMessageMutation,
+  useGetSchedulesMutation
 } = userApiSlice;

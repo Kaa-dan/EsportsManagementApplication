@@ -7,6 +7,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import playerRoutes from "./routes/playerRoutes.js";
+import messageRoutes from "./routes/messageRoute.js"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import Chat from "./model/chatSchema.js";
 import connectDB from "./config/db.js";
@@ -50,6 +51,8 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/player", playerRoutes);
+app.use("/api/message", messageRoutes);
+
 
 app.get("/", (req, res) => {
   res.json("server started");
@@ -65,6 +68,9 @@ server.listen(PORT, () => {
 // Socket.IO
 io.on("connection", (socket) => {
   console.log(`Socket ${socket.id} connected`);
+  // socket.on("login", ({name, room}, callback) => {
+  // console.log(name,room)
+  // })
 
   socket.on("sendMessage", async (message) => {
     try {
@@ -81,7 +87,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
-    console.log(`Socket ${socket.id} disconnected`);
-  });
+  // socket.on("disconnect", () => {
+  //   console.log(`Socket ${socket.id} disconnected`);
+  // });
 });

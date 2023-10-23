@@ -1,47 +1,47 @@
-import { Container } from "@mui/system";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Stack,
+  Box,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Pagination,
+  PaginationItem,
+} from "@mui/material";
+
+import dyncamicToast from "../../../components/user/form/DynamicToast";
+
+import { useEffect, useState } from "react";
+
 import {
   useGetPlayerMutation,
   useGetTeamMutation,
-} from "../../../application/slice/admin/adminApiSlice";
-import { useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  FormControl,
-  Grid,
-  InputLabel,
-  LinearProgress,
-  MenuItem,
-  PaginationItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Pagination,
-} from "@mui/material";
+} from "../../../../application/slice/admin/adminApiSlice";
 
-const head = ["No", "Name", "Team", "Role", "Salary"];
-const Players = () => {
-  const [getPlayerApi, { isLoading: pageLoading }] = useGetPlayerMutation();
+const PlayerView = () => {
+  const [getPlayersApi] = useGetPlayerMutation();
 
   const [playerData, setPlayerData] = useState([]);
 
-  const [filterValue, setFilterValue] = useState("all");
-
-  const [team, setTeam] = useState([]);
-
   const [query, setQuery] = useState("");
 
-  const [getTeamApi] = useGetTeamMutation();
+  const [filterValue, setFilterValue] = useState("all");
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState();
 
   const [rowsPerPage, setRowsPerPage] = useState(6);
 
+  const [team, setTeam] = useState([]);
+
+  const [getTeamApi] = useGetTeamMutation();
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const getTeamHandler = async () => {
@@ -53,23 +53,26 @@ const Players = () => {
       console.log(error.message);
     }
   };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+
   const getPlayerHandler = async (page) => {
     try {
-      const responce = await getPlayerApi({
+      const responce = await getPlayersApi({
         query,
         filterValue,
         page,
         rowsPerPage,
       });
+
       console.log(responce);
-      setTotalPages(responce.data.totalPages);
+
       setPlayerData(responce.data.data);
+      setTotalPages(responce.data.totalPages);
     } catch (error) {
-      console.log(error.message);
+      dyncamicToast(error?.message);
     }
+  };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   useEffect(() => {
@@ -79,7 +82,7 @@ const Players = () => {
 
   return (
     <>
-      <Container sx={{ position: "relative", mt: 13, height: "73vh" }}>
+      <div>
         <Box
           sx={{
             mb: 2,
@@ -120,40 +123,50 @@ const Players = () => {
             </Grid>
           </Grid>
         </Box>
-        <Paper>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              {pageLoading ? (
-                <LinearProgress />
-              ) : (
-                <>
-                  <TableHead>
-                    <TableRow>
-                      {head.map((value) => (
-                        <TableCell key={value}>{value}</TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {playerData.map((team, index) => {
-                      return (
-                        <TableRow>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{team?.userData[0]?.name}</TableCell>
-                          <TableCell>{team?.teamData[0]?.team}</TableCell>
-                          <TableCell>{team?.role}</TableCell>
-                          <TableCell>{team?.salary} $</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </>
-              )}
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Container>
-      <Box>
+        <Grid spacing={2} container>
+          {playerData.map((data) => (
+            <Grid item>
+              <Card sx={{ display: "flex", width: 350, height: 200 }}>
+                <CardContent sx={{ flex: "1 0 auto" }}>
+                  <Stack spacing={1}>
+                    <Typography component="div" variant="h5">
+                      {data?.teamData[0]?.team}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      component="div"
+                    >
+                      {data?.userData[0]?.name}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      component="div"
+                    >
+                      role: {data?.role}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      component="div"
+                    >
+                      salary:{data?.salary}$
+                    </Typography>
+                  </Stack>
+                </CardContent>
+
+                <CardMedia
+                  component="img"
+                  sx={{ width: 120 }}
+                  image={data?.userData[0]?.profilePhoto}
+                />
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+      <Box sx={{position:"fixed",mt:25}}>
         <Pagination
           count={totalPages}
           page={currentPage}
@@ -174,4 +187,4 @@ const Players = () => {
   );
 };
 
-export default Players;
+export default PlayerView;

@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { upload } from "../middlewares/multer.js";
+import { upload, videoUpload } from "../middlewares/multer.js";
 import {
   getUserData,
   blockOrUnblockUser,
@@ -17,6 +17,13 @@ import {
   getPlayer,
   getTeamBasedOnVacancy,
   addHighlight,
+  createShedule,
+  getSchedule,
+  deleteSchedules,
+  getHighlight,
+  deleteHighlightHandler,
+  editSchedule,
+  onGoingRecruitmentUserSide,
 } from "../controllers/adminController.js";
 
 router.put("/fans", getUserData);
@@ -34,6 +41,12 @@ router.put("/recruit", updateRecruits);
 router.patch("/recruit", deleteRecruits);
 router.get("/player", getPlayer);
 router.get("/team", getTeamBasedOnVacancy);
-router.post("/highlight", addHighlight);
-
+router.post("/highlight", videoUpload.single("video"), addHighlight);
+router.post("/schedule",createShedule)
+router.get("/schedule",getSchedule)
+router.delete("/schedule",deleteSchedules)
+router.get("/highlight",getHighlight)
+router.delete("/highlight",deleteHighlightHandler)
+router.put("/schedule",editSchedule)
+router.get("/recruitment",onGoingRecruitmentUserSide)
 export default router;

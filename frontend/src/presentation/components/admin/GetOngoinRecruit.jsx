@@ -50,7 +50,7 @@ const EDIT_FORM_VALIDATION = Yup.object().shape({
 });
 
 const Head = ["Team", "Role", "Salary", "End Date", "", " "];
-const Recruit = ({ query ,refresh}) => {
+const Recruit = ({ query, refresh }) => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(4);
   const [editRecruit, setEditRecruit] = useState(false);
@@ -107,7 +107,7 @@ const Recruit = ({ query ,refresh}) => {
 
   useEffect(() => {
     getOngoingRecruitHandler();
-  }, [query,refresh]);
+  }, [query, refresh]);
 
   const indexOfLastData = page * rowsPerPage;
   const indexOfFirstData = indexOfLastData - rowsPerPage;
@@ -119,20 +119,20 @@ const Recruit = ({ query ,refresh}) => {
 
   return (
     <>
-      <Paper sx={{ width: "100%", overflow: "hidden",height:"50%" }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {Head.map((column) => (
-                  <TableCell key={column}>{column}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            {onGoingRecruitLoading ? (
-              <LinearProgress />
-            ) : (
-              <>
+      <Paper sx={{ height: "inherit" }}>
+        {onGoingRecruitLoading ? (
+          <LinearProgress />
+        ) : (
+          <>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {Head.map((column) => (
+                      <TableCell key={column}>{column}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
                 <TableBody>
                   {currentData.map((loopData, index) => {
                     return (
@@ -141,8 +141,7 @@ const Recruit = ({ query ,refresh}) => {
                           {" "}
                           <Avatar
                             alt="User Photo"
-                            src={loopData?.teamData[0].teamPhoto} 
-                            
+                            src={loopData?.teamData[0].teamPhoto}
                           />
                           {loopData?.teamData[0]?.team}
                         </TableCell>
@@ -156,13 +155,13 @@ const Recruit = ({ query ,refresh}) => {
                           <Button
                             onClick={() => setEditRecruit(loopData)}
                             sx={{
-                              backgroundColor: "#6e43a3", 
-                              color: "#ffffff", 
-                              borderRadius: "8px", 
+                              backgroundColor: "#6e43a3",
+                              color: "#ffffff",
+                              borderRadius: "8px",
                               padding: "12px 24px",
-                              fontSize: "16px", 
+                              fontSize: "16px",
                               "&:hover": {
-                                backgroundColor: "#330e62"
+                                backgroundColor: "#330e62",
                               },
                             }}
                           >
@@ -189,12 +188,12 @@ const Recruit = ({ query ,refresh}) => {
                     );
                   })}
                 </TableBody>
-              </>
-            )}
-          </Table>
-        </TableContainer>
+              </Table>
+            </TableContainer>
+          </>
+        )}
       </Paper>
-      <Box sx={{ position: "static", ml: 50 ,mt:4 }}>
+      <Box sx={{ position: "fixed", mt: 2 }}>
         <CustomPagination
           currentPage={page}
           totalPages={Math.ceil(tableData.length / rowsPerPage)}
@@ -247,7 +246,6 @@ const Recruit = ({ query ,refresh}) => {
           </Formik>
         </Box>
       </Modal>
-    
     </>
   );
 };

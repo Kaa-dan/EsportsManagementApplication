@@ -34,7 +34,7 @@ const TopBar = ({ open, setOpen }) => {
 
   return (
     <>
-      <StyledAppBar position="fixed" open={open}>
+      <StyledAppBar  open={open} sx={{position:"fixed"}}>
         <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
           <IconButton
             color="inherit"

@@ -106,184 +106,162 @@ const Recruit = () => {
       <Container
         sx={{
           position: "relative",
-          backgroundColor: "rgba(51, 14, 98, 0.4)",
-          padding: "40px 40px",
-
-          // height: lg ? (md ? (sm ? "120%" : "130%") : "140%") : "140%",
-          height: "100%",
+          mt: 10,
+          height: "60vh",
+          
         }}
       >
-        <Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <Grid
-              container
-              spacing={3}
-              sx={{ justifyContent: "space-between" }}
+        
+          <Grid container  sx={{ justifyContent: "space-between",p:1 }} >
+            <Grid item>
+              <Button
+                sx={{
+                  backgroundColor: "#6e43a3",
+                  color: "#ffffff",
+                  borderRadius: "8px",
+                  padding: "12px 24px",
+                  fontSize: "16px",
+                  "&:hover": {
+                    backgroundColor: "#330e62",
+                  },
+                }}
+                onClick={handleOpen}
+              >
+                Send RecruitMent
+              </Button>
+            </Grid>
+            <Grid item>
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label"></InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={filterValue}
+                    onChange={(e) => setFilterValue(e.target.value)}
+                  >
+                    <MenuItem value="ongoing">OnGoing</MenuItem>
+                    <MenuItem value="accepted">Accepted</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Grid>
+            <Grid item>
+              <TextField
+                variant="outlined"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                style={{ flex: 1 }}
+                label="Search"
+              />
+            </Grid>
+          </Grid>
+        
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              bgcolor: "#330e62",
+              border: "7px solid #6e43a3",
+              boxShadow: 24,
+              p: 7,
+              borderRadius: "10px",
+            }}
+          >
+            <Formik
+              initialValues={{ ...INITIAL_FORM_STATE }}
+              validationSchema={FORM_VALIDATION}
+              onSubmit={submitHandler}
             >
-              <Grid item>
-                <Button
+              {isLoading ? (
+                <LinearProgress
                   sx={{
-                    backgroundColor: "#6e43a3",
-                    color: "#ffffff",
-                    borderRadius: "8px",
-                    padding: "12px 24px",
-                    fontSize: "16px",
-                    "&:hover": {
-                      backgroundColor: "#330e62",
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#E0E0E0",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#2196F3",
                     },
                   }}
-                  onClick={handleOpen}
-                >
-                  Send RecruitMent
-                </Button>
-              </Grid>
-              <Grid item>
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label"></InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={filterValue}
-                      onChange={(e) => setFilterValue(e.target.value)}
-                    >
-                      <MenuItem value="ongoing">OnGoing</MenuItem>
-                      <MenuItem value="accepted">Accepted</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-              </Grid>
-              <Grid item>
-                <TextField
-                  variant="outlined"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  style={{ flex: 1 }}
-                  label="Search"
                 />
-                {/* <Button
-                  variant="contained"
-                  color="primary"
-                  // onClick={getTeamHandler}
-                
-                  style={{ height: "56px" }}
-                >
-                  Search
-                </Button> */}
-              </Grid>
-            </Grid>
+              ) : (
+                <Form encType="multipart/form-data">
+                  <FormControl fullWidth>
+                    <Stack spacing={3}>
+                      <InputLabel id="demo-simple-select-label">
+                        Select Game
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={teamValue}
+                        label="Select"
+                        onChange={(event) => {
+                          setTeamValue(event.target.value);
+                        }}
+                      >
+                        {teams.map((team) => (
+                          <MenuItem key={team._id} value={team._id}>
+                            {team.team}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <TextfieldWrapper name="salary" label="Salary" />
+                      <TextfieldWrapper name="role" label="Role" />
+                      <label
+                        htmlFor="date"
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        End Date
+                      </label>
+                      <input
+                        onChange={(event) => setDate(event.target.value)}
+                        type="date"
+                        id="date"
+                        style={{
+                          color: "white",
+                          padding: "8px",
+                          border: "1px solid #ccc",
+                          borderRadius: "4px",
+                          fontSize: "20px",
+                          backgroundColor: "#330e62",
+                        }}
+                        required
+                      />
+                      {isLoading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <ButtonWrapper>Send</ButtonWrapper>
+                      )}
+                    </Stack>
+                  </FormControl>
+                </Form>
+              )}
+            </Formik>
           </Box>
+        </Modal>
 
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "#330e62",
-                border: "7px solid #6e43a3",
-                boxShadow: 24,
-                p: 7,
-                borderRadius: "10px",
-              }}
-            >
-              <Formik
-                initialValues={{ ...INITIAL_FORM_STATE }}
-                validationSchema={FORM_VALIDATION}
-                onSubmit={submitHandler}
-              >
-                {isLoading ? (
-                  <LinearProgress
-                    sx={{
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: "#E0E0E0",
-                      "& .MuiLinearProgress-bar": {
-                        backgroundColor: "#2196F3",
-                      },
-                    }}
-                  />
-                ) : (
-                  <Form encType="multipart/form-data">
-                    <FormControl fullWidth>
-                      <Stack spacing={3}>
-                        <InputLabel id="demo-simple-select-label">
-                          Select Game
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={teamValue}
-                          label="Select"
-                          onChange={(event) => {
-                            setTeamValue(event.target.value);
-                          }}
-                        >
-                          {teams.map((team) => (
-                            <MenuItem key={team._id} value={team._id}>
-                              {team.team}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <TextfieldWrapper name="salary" label="Salary" />
-                        <TextfieldWrapper name="role" label="Role" />
-                        <label
-                          htmlFor="date"
-                          style={{ fontWeight: "bold", fontSize: "16px" }}
-                        >
-                          End Date
-                        </label>
-                        <input
-                          onChange={(event) => setDate(event.target.value)}
-                          type="date"
-                          id="date"
-                          style={{
-                            color: "white",
-                            padding: "8px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "20px",
-                            backgroundColor: "#330e62",
-                          }}
-                          required
-                        />
-                        {isLoading ? (
-                          <CircularProgress size={20} />
-                        ) : (
-                          <ButtonWrapper>Send</ButtonWrapper>
-                        )}
-                      </Stack>
-                    </FormControl>
-                  </Form>
-                )}
-              </Formik>
-            </Box>
-          </Modal>
-
-          {/* <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table"> */}
-          {filterValue === "ongoing" ? (
-            <GetOngoinRecruit refresh={refresh} query={query} />
-          ) : (
-            <GetAcceptedRecruit
-              setRefresh={setRefresh}
-              refresh={refresh}
-              query={query}
-            />
-          )}
-          {/* </Table>
-            </TableContainer>
-          </Paper> */}
-        </Box>
+        {filterValue === "ongoing" ? (
+          <GetOngoinRecruit refresh={refresh} query={query} />
+        ) : (
+          <GetAcceptedRecruit
+            setRefresh={setRefresh}
+            refresh={refresh}
+            query={query}
+          />
+        )}
       </Container>
+
     </>
   );
 };

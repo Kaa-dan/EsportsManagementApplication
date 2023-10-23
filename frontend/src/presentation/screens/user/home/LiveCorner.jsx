@@ -7,34 +7,45 @@ import {
   Grid,
   Typography,
   Skeleton,
+  Divider,
 } from "@mui/material";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetHighlightMutation } from "../../../../application/slice/admin/adminApiSlice";
 
 import { useGetStreamsMutation } from "../../../../application/slice/user/userApiSlice";
+import { Box, Stack } from "@mui/system";
+import VideoPlayer from "../../../components/user/dashboard/VideoPlayer";
 const LiveCorner = () => {
+  const [highlightData, setHighlightData] = useState([]);
   const navigate = useNavigate();
   const [getStreamApi, { isLoading }] = useGetStreamsMutation();
   const [streams, setStreams] = useState([]);
+  const [getHighlightApi] = useGetHighlightMutation();
+  const [query, setQuery] = useState("");
   const getStreamHandler = async () => {
     const responce = await getStreamApi();
 
     setStreams(responce.data.data);
   };
+  const getHighlightHandler = async () => {
+    try {
+      const responce = await getHighlightApi({ query });
+      console.log(responce);
+      setHighlightData(responce.data.data);
+    } catch (error) {
+      dyncamicToast(error?.message);
+    }
+  };
   useEffect(() => {
     getStreamHandler();
+    getHighlightHandler();
   }, []);
 
   return (
-    <Container
-      sx={{
-        position: "relative",
-        backgroundColor: "rgba(51, 14, 98, 0.4)",
-        padding: "40px 40px",
-        height: "140%",
-      }}
-    >
-      <Grid spacing={4} container>
+    <>
+    <Stack spacing={3} sx={{m:4}}>
+    <Grid spacing={3} container>
         {streams.map((str) =>
           isLoading ? (
             <Grid key={str._id} lg={4} item>
@@ -42,7 +53,7 @@ const LiveCorner = () => {
             </Grid>
           ) : (
             <Grid lg={4} item key={str._id}>
-              <Card sx={{ maxWidth: 345 }}>
+              <Card sx={{ maxWidth: 345,width:380,height:240 }}>
                 <CardActionArea>
                   <CardMedia
                     component="img"
@@ -51,12 +62,17 @@ const LiveCorner = () => {
                     onClick={() => navigate(`/stream?id=${str.playerId}`)}
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      {str.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {str.description}
-                    </Typography>
+                  <Typography component="span" sx={{ fontSize: "12px" }}>
+                  {str?.title}
+                </Typography>
+                <Typography
+                  sx={{
+                    borderRadius: "5px",
+                  }}
+                  gutterBottom
+                >
+                  {str?.description}
+                </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -64,7 +80,33 @@ const LiveCorner = () => {
           )
         )}
       </Grid>
-    </Container>
+<Divider/>
+      <Grid container spacing={3} direction="row">
+        {highlightData.map((data) => {
+          return (
+            <Grid key={data._id} item>
+              <Card sx={{ maxWidth: 345 }}>
+                <VideoPlayer videoUrl={data?.video} />
+
+                <Typography component="span" sx={{ fontSize: "12px" }}>
+                  {new Date(data?.timestamp).toLocaleDateString()}
+                </Typography>
+                <Typography
+                  sx={{
+                    borderRadius: "5px",
+                  }}
+                  gutterBottom
+                >
+                  {data?.discription}
+                </Typography>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Stack>
+     
+    </>
   );
 };
 

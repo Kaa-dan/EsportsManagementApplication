@@ -118,6 +118,63 @@ export const adminApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    createSchedule: builder.mutation({
+      query: (data) => {
+        console.log(data);
+        return {
+          url: `${USERS_URL}/schedule`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getSchedule: builder.mutation({
+      query: (data) => {
+        console.log(data);
+        return {
+          url: `${USERS_URL}/schedule?filter=${data.filter}`,
+          method: "GET",
+        };
+      },
+    }),
+    deleteSchedules: builder.mutation({
+      query: (id) => ({
+        url: `${USERS_URL}/schedule?id=${id.ID}`,
+        method: "DELETE",
+      }),
+    }),
+    getHighlight: builder.mutation({
+      query: ({ query }) => {
+        console.log(query, "query");
+        return {
+          url: `${USERS_URL}/highlight?query=${query}`,
+          method: "GET",
+        };
+      },
+    }),
+    deleteHighlight: builder.mutation({
+      query: ({ id }) => {
+        return {
+          url: `${USERS_URL}/highlight?id=${id}`,
+          method: "DELETE",
+        };
+      },
+    }),
+    editSchedule: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${USERS_URL}/schedule`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
+    getOnGoingrecruitmentUser: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/recruitment`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -138,5 +195,12 @@ export const {
   useDeleteRecruitsMutation,
   useGetPlayerMutation,
   useGetTeamBasedONVacansyMutation,
-  useAddHighlighMutation
+  useAddHighlighMutation,
+  useCreateScheduleMutation,
+  useGetScheduleMutation,
+  useDeleteSchedulesMutation,
+  useGetHighlightMutation,
+  useDeleteHighlightMutation,
+  useEditScheduleMutation,
+  useGetOnGoingrecruitmentUserMutation
 } = adminApi;

@@ -5,7 +5,9 @@ import Recruit from "../model/recruitModel.js";
 import AcceptRecruit from "../model/acceptRecruitModel.js";
 import Player from "../model/playerModel.js";
 import mongoose from "mongoose";
-import { saveImage } from "../middlewares/cloudinary.js";
+import Hightlight from "../model/highLightModel.js";
+import Schedules from "../model/schedulModel.js";
+import { saveImage, saveVideo } from "../middlewares/cloudinary.js";
 
 //@desc Blocking and Unblocking User
 const blockOrUnblockUser = asyncHandler(async (req, res) => {
@@ -41,6 +43,7 @@ const createTeam = asyncHandler(async (req, res) => {
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await saveImage(dataURI);
+    console.log("responce", cldRes);
     teamPhoto = cldRes.secure_url;
   }
   const newTeam = await Team.create({
@@ -413,8 +416,135 @@ const getTeamBasedOnVacancy = asyncHandler(async (req, res) => {
 });
 
 const addHighlight = asyncHandler(async (req, res) => {
-  
+  const { discription } = req.body;
+
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  if (!/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
+    return res.status(400).json({ message: "Invalid file format" });
+  }
+  const videoPath = file.path;
+  console.log(videoPath);
+  const response = await saveVideo(videoPath);
+  console.log("responce", response);
+  if (!response) {
+    return res.status(500).json({ message: "Error uploading video " });
+  }
+  await Hightlight.create({
+    video: response.secure_url,
+    discription,
+  });
+  res.status(201).json({
+    message: "uploaded",
+  });
+});
+
+const createShedule = asyncHandler(async (req, res) => {
+  const { time, date, discription, scheduleType, teamBackend } = req.body;
+console.log(teamBackend)
+  if (!time || !date || !discription || !scheduleType) {
+    res.status(404);
+    throw new Error("try again later");
+  }
+  console.log(date);
+  try {
+    const responce = await Schedules.create({
+      scheduleType,
+      date,
+      time,
+      discription,
+      team: teamBackend,
+    });
+
+    if (responce) {
+      res.status(201).json({ message: "success" });
+    } else {
+      res.status(404);
+      throw new Error("server busy");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const getSchedule = asyncHandler(async (req, res) => {
+  const { filter } = req.query;
+  let schedules = null;
+  if (filter) {
+    if (filter === "all") {
+      schedules = await Schedules.find();
+    } else {
+      schedules = await Schedules.find({ scheduleType: filter });
+    }
+    res.status(200).json({ data: schedules, message: "loaded" });
+  } else {
+    res.status(200);
+    throw new Error("Server busy");
+  }
+});
+
+const deleteSchedules = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const deletedSchedule = await Schedules.deleteOne({ _id: id });
+  res.status(200).json({ message: "success", data: deleteSchedules });
+});
+
+const getHighlight = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+  console.log(query);
+  // const pageSize = 6;
+  // let PageNumber = parseInt(page) || 1;
+  // const skip = (PageNumber - 1) * pageSize;
+  const highlight = await Hightlight.find({
+    $or: [{ discription: { $regex: query, $options: "i" } }],
+  });
+
+  if (highlight) {
+    res.status(200).json({ message: "success", data: highlight });
+  } else {
+    res.status(400);
+    throw new Error("server busy");
+  }
+});
+
+const deleteHighlightHandler = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    res.status(200);
+    throw new Error("No Id Provided");
+  }
+  const responce = await Hightlight.deleteOne({ _id: id });
+  if (responce) {
+    res.status(200).json({ message: "Deleted" });
+  }
+});
+
+const editSchedule = asyncHandler(async (req, res) => {
   console.log(req.body);
+  const { _id, date, time, discription, team } = req.body;
+  const responce = await Schedules.updateOne(
+    { _id },
+    {
+      $set: {
+        scheduleType: scheduleType,
+        date: date,
+        time: time,
+        discription: discription,
+        team: team,
+      },
+    }
+  );
+  res.status(200).json({ message: "success" });
+});
+
+const onGoingRecruitmentUserSide = asyncHandler(async (req, res) => {
+  const onGoingRecruitment = await Recruit.find().populate("team").sort({ endDate: 1 });
+  res.status(200).json({ data: onGoingRecruitment, message: "success" });
 });
 export {
   getUserData,
@@ -432,4 +562,11 @@ export {
   getPlayer,
   getTeamBasedOnVacancy,
   addHighlight,
+  createShedule,
+  getSchedule,
+  deleteSchedules,
+  getHighlight,
+  deleteHighlightHandler,
+  editSchedule,
+  onGoingRecruitmentUserSide
 };

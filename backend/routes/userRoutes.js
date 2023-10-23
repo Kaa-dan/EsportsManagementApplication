@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 const router = express.Router();
 import {
   loginUser,
@@ -9,7 +9,7 @@ import {
   sentOtpRegister,
   googleAuth,
 } from "../controllers/authController.js";
-import { acceptRecruitment, getProfile, getStream } from "../controllers/fansController.js";
+import { acceptRecruitment, getProfile, getSchedule, getStream } from "../controllers/fansController.js";
 import { updateProfile } from "../controllers/fansController.js";
 import { upload, videoUpload } from "../middlewares/multer.js";
 import { protect } from "../middlewares/authMiddleware.js";
@@ -41,4 +41,5 @@ router.post("/profile", upload.single("profilePhoto"), updateProfile);
 router.patch("/profile",getProfile)
 router.patch("/accept-recruit", videoUpload.single("file"), acceptRecruitment);
 router.get("/getStreams",getStream)
+router.get("/schedule",getSchedule)
 export default router;

@@ -18,8 +18,14 @@ export const playerApi = apiSlice.injectEndpoints({
         };
       },
     }),
+    deleteLive: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/live?room_id=${data.room_id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
 // Export hooks for each mutation endpoint for use in components
-export const { useCreateLiveMutation } = playerApi;
+export const { useCreateLiveMutation, useDeleteLiveMutation } = playerApi;

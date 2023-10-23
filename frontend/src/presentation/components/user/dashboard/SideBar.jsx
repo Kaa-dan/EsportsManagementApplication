@@ -13,11 +13,11 @@ import {
   Tooltip,
   Avatar,
   Modal,
+  Container,
 } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
 import { useLocation } from "react-router-dom";
-import ProfileImage from "../../../../assets/user/profile/profile.jpeg";
-import banner from "../../../../assets/user/dashboard/banner.gif";
+
 // mui icons
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
@@ -27,12 +27,22 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import Person4Icon from "@mui/icons-material/Person4";
 import MenuOpenTwoToneIcon from "@mui/icons-material/MenuOpenTwoTone";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import GroupsIcon from "@mui/icons-material/Groups";
+import SportsKabaddiIcon from "@mui/icons-material/SportsKabaddi";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
+import DuoIcon from "@mui/icons-material/Duo";
+import ChatIcon from "@mui/icons-material/Chat";
+import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
+import Diversity2Icon from "@mui/icons-material/Diversity2";
 
 // custom fans component
 import Profile from "../../../screens/user/home/Profile";
 import Notification from "../../../screens/user/home/Notification";
 import LiveCorner from "../../../screens/user/home/LiveCorner";
 import ChatUI from "../../../screens/user/home/Chat";
+import PlayerView from "../../../screens/user/home/PlayerView";
 // custom player component
 import LiveSetup from "../../../screens/player/LiveSetup";
 import Live from "../../../screens/player/Live";
@@ -42,6 +52,8 @@ import Fans from "../../../screens/admin/Fans";
 import Teams from "../../../screens/admin/Teams";
 import MainRecruit from "../../../screens/admin/MainRecruit";
 import Players from "../../../screens/admin/Players";
+import ManageSchedules from "../../../screens/admin/manageSchedules";
+import AddHighlight from "../../../screens/admin/addHighlights";
 // redux store
 import { logout } from "../../../../application/slice/user/authSlice";
 import { useLogoutMutation } from "../../../../application/slice/user/authApiSlice";
@@ -50,7 +62,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useMemo } from "react";
-import AddHighlights from "../../../screens/admin/AddHighlights";
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -129,35 +141,54 @@ const SideBar = ({ open, setOpen }) => {
       list = useMemo(() => [
         {
           title: "Livecorner",
-          icon: <LiveTvIcon />,
+          icon: <DuoIcon />,
           link: "live-corner",
           component: <LiveCorner />,
         },
         {
           title: "Notification",
-          icon: <NotificationsIcon />,
+          icon: <MarkEmailUnreadIcon />,
           link: "notification",
           component: <Notification />,
         },
         {
-          title: "Notification",
-          icon: <NotificationsIcon />,
+          title: "Chat",
+          icon: <ChatIcon />,
           link: "chat",
           component: <ChatUI />,
+        },
+        ,
+        {
+          title: "Team",
+          icon: <Diversity2Icon />,
+          link: "player-view",
+          component: <PlayerView />,
         },
       ]);
     } else if (user.role === "admin") {
       list = useMemo(() => [
         {
+          title: "Highlight",
+          icon: <OndemandVideoIcon />,
+          link: "highlight",
+          component: <AddHighlight />,
+        },
+        {
           title: "Fans",
-          icon: <Person4Icon />,
+          icon: <PeopleOutlineIcon />,
           link: "fans",
           component: <Fans />,
+        },
+        {
+          title: "Players",
+          icon: <SportsKabaddiIcon />,
+          link: "player",
+          component: <Players />,
         },
 
         {
           title: "Teams",
-          icon: <Diversity1Icon />,
+          icon: <GroupsIcon />,
           link: "teams",
           component: <Teams />,
         },
@@ -168,16 +199,10 @@ const SideBar = ({ open, setOpen }) => {
           component: <MainRecruit />,
         },
         {
-          title: "Players",
-          icon: <ContactMailIcon />,
-          link: "player",
-          component: <Players />,
-        },
-        {
-          title: "Players",
-          icon: <ContactMailIcon />,
-          link: "highlights",
-          component: <AddHighlights />,
+          title: "Schedule",
+          icon: <DateRangeIcon />,
+          link: "schedules",
+          component: <ManageSchedules />,
         },
       ]);
     } else {
@@ -187,6 +212,31 @@ const SideBar = ({ open, setOpen }) => {
           icon: <LiveTvIcon />,
           link: "go-live",
           component: <LiveSetup />,
+        },
+        {
+          title: "Chat",
+          icon: <ChatIcon />,
+          link: "chat",
+          component: <ChatUI />,
+        },
+        ,
+        {
+          title: "Notification",
+          icon: <MarkEmailUnreadIcon />,
+          link: "notification",
+          component: <Notification />,
+        },
+        {
+          title: "Team",
+          icon: <Diversity2Icon />,
+          link: "player-view",
+          component: <PlayerView />,
+        },
+        {
+          title: "Livecorner",
+          icon: <DuoIcon />,
+          link: "live-corner",
+          component: <LiveCorner />,
         },
       ]);
     }
@@ -211,7 +261,12 @@ const SideBar = ({ open, setOpen }) => {
 
   return (
     <>
-      <Drawer variant="permanent" open={open} sx={{ border: "2px solid red" }}>
+      <Drawer
+        variant="permanent"
+        open={open}
+        PaperProps={{ sx: { height: "100vh" } }}
+        sx={{ border: "2px solid red" }}
+      >
         <DrawerHeader
           sx={{
             display: "flex",
@@ -329,11 +384,16 @@ const SideBar = ({ open, setOpen }) => {
           </ListItem>
         </List>
         <Divider />
-        <Box></Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
 
+      <Container
+        sx={{
+          position: "relative",
+          backgroundColor: "rgba(51, 14, 98, 0.4)",
+          height: "80vh",
+          mt:14
+        }}
+      >
         {/* Rendering components based on routes */}
         <Routes>
           {list.map((item) => (
@@ -341,7 +401,7 @@ const SideBar = ({ open, setOpen }) => {
           ))}
           <Route path={"/stream"} element={<Live />} />
         </Routes>
-      </Box>
+      </Container>
     </>
   );
 };

@@ -9,8 +9,8 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
+      <Box sx={{ ml:open?"20vh":"8vh" }}>
+        {/* <CssBaseline /> */}
         <TopBar {...{ open, setOpen }} />
         <SideBar {...{ open, setOpen }} />
       </Box>

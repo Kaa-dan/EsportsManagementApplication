@@ -19,4 +19,16 @@ const createLive = asyncHandler(async (req, res) => {
   });
   res.status(200).json({ message: "started streaming", data: newStream });
 });
-export { createLive };
+
+const deleteLive = asyncHandler(async (req, res) => {
+  const { room_id } = req.query;
+  if (!room_id) {
+    res.status(404);
+    throw new Error("Room ID is not valid");
+  }
+  const deleteResult = await Stream.deleteMany({ playerId: room_id });
+  console.log(deleteResult);
+  res.status(201).json({ message: "success" });
+});
+
+export { createLive, deleteLive };
