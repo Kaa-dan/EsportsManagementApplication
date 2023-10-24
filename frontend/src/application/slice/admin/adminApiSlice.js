@@ -132,7 +132,7 @@ export const adminApi = apiSlice.injectEndpoints({
       query: (data) => {
         console.log(data);
         return {
-          url: `${USERS_URL}/schedule?filter=${data.filter}`,
+          url: `${USERS_URL}/schedule?filter=${data.filter}&dateFilter=${data.dateFilter}`,
           method: "GET",
         };
       },
@@ -175,6 +175,15 @@ export const adminApi = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    demotePlayer: builder.mutation({
+      query: (data) =>{
+        console.log(data)
+        return ({
+          url: `${USERS_URL}/player?id=${data.playerId}`,
+          method: "DELETE",
+        })
+      }
+    }),
   }),
 });
 
@@ -202,5 +211,6 @@ export const {
   useGetHighlightMutation,
   useDeleteHighlightMutation,
   useEditScheduleMutation,
-  useGetOnGoingrecruitmentUserMutation
+  useGetOnGoingrecruitmentUserMutation,
+  useDemotePlayerMutation,
 } = adminApi;

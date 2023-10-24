@@ -445,7 +445,7 @@ const addHighlight = asyncHandler(async (req, res) => {
 
 const createShedule = asyncHandler(async (req, res) => {
   const { time, date, discription, scheduleType, teamBackend } = req.body;
-console.log(teamBackend)
+  console.log(teamBackend);
   if (!time || !date || !discription || !scheduleType) {
     res.status(404);
     throw new Error("try again later");
@@ -472,19 +472,27 @@ console.log(teamBackend)
 });
 
 const getSchedule = asyncHandler(async (req, res) => {
-  const { filter } = req.query;
-  let schedules = null;
-  if (filter) {
-    if (filter === "all") {
-      schedules = await Schedules.find();
-    } else {
-      schedules = await Schedules.find({ scheduleType: filter });
-    }
-    res.status(200).json({ data: schedules, message: "loaded" });
-  } else {
-    res.status(200);
-    throw new Error("Server busy");
+  const { filter, dateFilter } = req.query;
+  console.log(req.query);
+  const query = {};
+  if (filter !== "all") {
+    query.scheduleType = filter;
   }
+  if (dateFilter !== "null") {
+    const date = new Date(dateFilter);
+    let formattedDate = date
+      .toISOString()
+      .replace(/\.\d{3}/, "")
+      .replace(/-/g, "/")
+      .replace("T", " ")
+      .replace("Z", "");
+
+    query.date = formattedDate;
+  }
+
+  const schedules = await Schedules.find(query);
+
+  res.status(200).json({ data: schedules, message: "loaded" });
 });
 
 const deleteSchedules = asyncHandler(async (req, res) => {
@@ -525,26 +533,37 @@ const deleteHighlightHandler = asyncHandler(async (req, res) => {
 });
 
 const editSchedule = asyncHandler(async (req, res) => {
-  console.log(req.body);
-  const { _id, date, time, discription, team } = req.body;
-  const responce = await Schedules.updateOne(
-    { _id },
-    {
-      $set: {
-        scheduleType: scheduleType,
-        date: date,
-        time: time,
-        discription: discription,
-        team: team,
-      },
-    }
-  );
-  res.status(200).json({ message: "success" });
+  console.log("nithin", req.body);
+  const { _id, date, time, discription, team, scheduleType } = req.body;
+  try {
+    const responce = await Schedules.updateOne(
+      { _id },
+      {
+        $set: {
+          scheduleType: scheduleType,
+          date: date,
+          time: time,
+          discription: discription,
+          team: team,
+        },
+      }
+    );
+    console.log("respomce", responce);
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
 const onGoingRecruitmentUserSide = asyncHandler(async (req, res) => {
-  const onGoingRecruitment = await Recruit.find().populate("team").sort({ endDate: 1 });
+  const onGoingRecruitment = await Recruit.find()
+    .populate("team")
+    .sort({ endDate: 1 });
   res.status(200).json({ data: onGoingRecruitment, message: "success" });
+});
+
+const demotePlayer = asyncHandler(async (req, res) => {
+  const { id } = req.query;
 });
 export {
   getUserData,
@@ -568,5 +587,6 @@ export {
   getHighlight,
   deleteHighlightHandler,
   editSchedule,
-  onGoingRecruitmentUserSide
+  onGoingRecruitmentUserSide,
+  demotePlayer,
 };

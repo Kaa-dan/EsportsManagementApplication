@@ -52,7 +52,8 @@ const breakPoints = [
 
 const Notification = () => {
   const [open, setOpen] = useState(false);
-  const [onGoingRecruitApi] = useGetOnGoingrecruitmentUserMutation();
+  const [onGoingRecruitApi, { isLoading }] =
+    useGetOnGoingrecruitmentUserMutation();
   const [onGoingRecruitData, setOnGoingRecruitData] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [notifictionData, setNotificationData] = useState([]);
@@ -105,154 +106,101 @@ const Notification = () => {
   }, []);
   return (
     <>
-      <h1 style={{ textAlign: "center" }}>Notification</h1>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "center",
-          height: "35vh",
-        }}
-      >
-        <Carousel breakPoints={breakPoints}>
-          {onGoingRecruitData.map((recruits) => (
-            <Item key={recruits._id}>
-              <Card sx={{ display: "flex", width: 350, height: 250 }}>
-                <CardContent sx={{ flex: "1 0 auto" }}>
-                  <Stack spacing={1}>
-                    <Typography component="div" variant="h5">
-                      {recruits?.team?.team}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      Role:{recruits?.role}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      salary: {recruits?.salary}$
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      End date: {new Date(recruits?.endDate).toDateString()}
-                    </Typography>
-                    <div>
-                      {recruits?.acceptedBy.includes(user._id) ? (
-                        <Button
-                          style={{ backgroundColor: "#487e4c", color: "white" }}
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CircularProgress style={{ color: "#6e43a3" }} />
+        </div>
+      ) : (
+        <>
+          <h1 style={{ textAlign: "center" }}>Notification</h1>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "70vh",
+            }}
+          >
+            <Carousel breakPoints={breakPoints}>
+              {onGoingRecruitData.map((recruits) => (
+                <Item key={recruits._id}>
+                  <Card sx={{ display: "flex", width: 350, height: 250 }}>
+                    <CardContent sx={{ flex: "1 0 auto" }}>
+                      <Stack spacing={1}>
+                        <Typography component="div" variant="h5">
+                          {recruits?.team?.team}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
                         >
-                          Accepted
-                        </Button>
-                      ) : (
-                        <Button
-                          sx={{
-                            backgroundColor: "#6e43a3",
-                            color: "#ffffff",
-                            borderRadius: "8px",
-                            fontSize: "16px",
-                            "&:hover": {
-                              backgroundColor: "#330e62",
-                            },
-                            mb: 0,
-                          }}
-                          onClick={() => setOpen(recruits)}
+                          Role:{recruits?.role}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
                         >
-                          Accept
-                        </Button>
-                      )}
-                    </div>
-                  </Stack>
-                </CardContent>
+                          salary: {recruits?.salary}$
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
+                        >
+                          End date: {new Date(recruits?.endDate).toDateString()}
+                        </Typography>
+                        <div>
+                          {recruits?.acceptedBy.includes(user._id) ? (
+                            <Button
+                              style={{
+                                backgroundColor: "#487e4c",
+                                color: "white",
+                              }}
+                            >
+                              Accepted
+                            </Button>
+                          ) : (
+                            <Button
+                              sx={{
+                                backgroundColor: "#6e43a3",
+                                color: "#ffffff",
+                                borderRadius: "8px",
+                                fontSize: "16px",
+                                "&:hover": {
+                                  backgroundColor: "#330e62",
+                                },
+                                mb: 0,
+                              }}
+                              onClick={() => setOpen(recruits)}
+                            >
+                              Accept
+                            </Button>
+                          )}
+                        </div>
+                      </Stack>
+                    </CardContent>
 
-                <CardMedia
-                  component="img"
-                  sx={{ width: 120 }}
-                  image={recruits?.team?.teamPhoto}
-                />
-              </Card>
-            </Item>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "25vh",
-          marginTop: "50px",
-        }}
-      >
-        <Carousel breakPoints={breakPoints}>
-          {notifictionData.map((item) => (
-            <Item key={item._id}>
-              <Card sx={{ display: "flex", width: 350, height: 250 }}>
-                <CardContent sx={{ flex: "1 0 auto" }}>
-                  <Stack spacing={1}>
-                    <Typography component="div" variant="h5">
-                      {item?.scheduleType}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      {item?.discription}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      salary: {new Date(item?.time).toDateString()}$
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      End date: {new Date(item?.date).toDateString()}
-                    </Typography>
-                    <div>
-                      <Button
-                        sx={{
-                          backgroundColor: "#6e43a3",
-                          color: "#ffffff",
-                          borderRadius: "8px",
-                          fontSize: "16px",
-                          "&:hover": {
-                            backgroundColor: "#330e62",
-                          },
-                          mb: 0,
-                        }}
-                        onClick={() => setOpen(recruits)}
-                      >
-                        Accept
-                      </Button>
-                    </div>
-                  </Stack>
-                </CardContent>
-                {item?.scheduleType === "tournament" ? (
-                  <CardMedia
-                    component="img"
-                    sx={{ width: 120 }}
-                    //  image={item?.team?.teamPhoto}
-                  />
-                ) : null}
-              </Card>
-            </Item>
-          ))}
-        </Carousel>
-      </div> */}
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 120 }}
+                      image={recruits?.team?.teamPhoto}
+                    />
+                  </Card>
+                </Item>
+              ))}
+            </Carousel>
+          </div>
+        </>
+      )}
 
       <Modal
         open={open}

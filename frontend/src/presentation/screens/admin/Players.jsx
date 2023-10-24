@@ -2,8 +2,9 @@ import { Container } from "@mui/system";
 import {
   useGetPlayerMutation,
   useGetTeamMutation,
+  useDemotePlayerMutation,
 } from "../../../application/slice/admin/adminApiSlice";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -22,9 +23,11 @@ import {
   TableRow,
   TextField,
   Pagination,
+  Button,
 } from "@mui/material";
+import dyncamicToast from "../../components/user/form/DynamicToast";
 
-const head = ["No", "Name", "Team", "Role", "Salary"];
+const head = ["No", "Name", "Team", "Role", "Salary", ""];
 const Players = () => {
   const [getPlayerApi, { isLoading: pageLoading }] = useGetPlayerMutation();
 
@@ -44,6 +47,8 @@ const Players = () => {
 
   const [totalPages, setTotalPages] = useState(1);
 
+  const [demotePlayerApi] = useDemotePlayerMutation();
+
   const getTeamHandler = async () => {
     try {
       const responce = await getTeamApi();
@@ -55,6 +60,14 @@ const Players = () => {
   };
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const demotePlayerHandler = async (playerId) => {
+    try {
+      const responce = await demotePlayerApi({ playerId });
+    } catch (error) {
+      dyncamicToast(error?.message);
+    }
   };
   const getPlayerHandler = async (page) => {
     try {
@@ -143,6 +156,15 @@ const Players = () => {
                           <TableCell>{team?.teamData[0]?.team}</TableCell>
                           <TableCell>{team?.role}</TableCell>
                           <TableCell>{team?.salary} $</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => {
+                                demotePlayerHandler(team?._id);
+                              }}
+                            >
+                              Demote
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}

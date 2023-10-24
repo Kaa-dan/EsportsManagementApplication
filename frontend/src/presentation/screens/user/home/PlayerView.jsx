@@ -14,6 +14,7 @@ import {
   TextField,
   Pagination,
   PaginationItem,
+  CircularProgress,
 } from "@mui/material";
 
 import dyncamicToast from "../../../components/user/form/DynamicToast";
@@ -26,7 +27,7 @@ import {
 } from "../../../../application/slice/admin/adminApiSlice";
 
 const PlayerView = () => {
-  const [getPlayersApi] = useGetPlayerMutation();
+  const [getPlayersApi, { isLoading }] = useGetPlayerMutation();
 
   const [playerData, setPlayerData] = useState([]);
 
@@ -82,107 +83,125 @@ const PlayerView = () => {
 
   return (
     <>
-      <div>
-        <Box
-          sx={{
-            mb: 2,
-            mt: 3,
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
           }}
         >
-          <Grid container spacing={3}>
-            <Grid item>
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Team</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
-                  >
-                    <MenuItem key="all" value="all">
-                      all
-                    </MenuItem>
-                    {team.map((value) => (
-                      <MenuItem key={value._id} value={value._id}>
-                        {value.team}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
-            <Grid item>
-              <TextField
-                variant="outlined"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                style={{ flex: 1 }}
-                label="Search"
-              />
-            </Grid>
-          </Grid>
-        </Box>
-        <Grid spacing={2} container>
-          {playerData.map((data) => (
-            <Grid item>
-              <Card sx={{ display: "flex", width: 350, height: 200 }}>
-                <CardContent sx={{ flex: "1 0 auto" }}>
-                  <Stack spacing={1}>
-                    <Typography component="div" variant="h5">
-                      {data?.teamData[0]?.team}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      {data?.userData[0]?.name}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      role: {data?.role}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      component="div"
-                    >
-                      salary:{data?.salary}$
-                    </Typography>
-                  </Stack>
-                </CardContent>
+          <CircularProgress style={{ color: "#6e43a3" }} />
+        </div>
+      ) : (
+        <>
+          {" "}
+          <div>
+            <Box
+              sx={{
+                mb: 2,
+                mt: 3,
+              }}
+            >
+              <Grid container spacing={3}>
+                <Grid item>
+                  <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Team
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={filterValue}
+                        onChange={(e) => setFilterValue(e.target.value)}
+                      >
+                        <MenuItem key="all" value="all">
+                          all
+                        </MenuItem>
+                        {team.map((value) => (
+                          <MenuItem key={value._id} value={value._id}>
+                            {value.team}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    style={{ flex: 1 }}
+                    label="Search"
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+            <Grid spacing={2} container>
+              {playerData.map((data) => (
+                <Grid item>
+                  <Card sx={{ display: "flex", width: 350, height: 200 }}>
+                    <CardContent sx={{ flex: "1 0 auto" }}>
+                      <Stack spacing={1}>
+                        <Typography component="div" variant="h5">
+                          {data?.teamData[0]?.team}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
+                        >
+                          {data?.userData[0]?.name}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
+                        >
+                          role: {data?.role}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          component="div"
+                        >
+                          salary:{data?.salary}$
+                        </Typography>
+                      </Stack>
+                    </CardContent>
 
-                <CardMedia
-                  component="img"
-                  sx={{ width: 120 }}
-                  image={data?.userData[0]?.profilePhoto}
-                />
-              </Card>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 120 }}
+                      image={data?.userData[0]?.profilePhoto}
+                    />
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </div>
-      <Box sx={{position:"fixed",mt:25}}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={(event, page) => handlePageChange(page)}
-          shape="rounded"
-          size="large"
-          color="primary"
-          renderItem={(item) => (
-            <PaginationItem
-              component="li"
-              {...item}
-              onClick={() => handlePageChange(item.page)}
+          </div>
+          <Box sx={{ position: "fixed", mt: 25 }}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, page) => handlePageChange(page)}
+              shape="rounded"
+              size="large"
+              color="primary"
+              renderItem={(item) => (
+                <PaginationItem
+                  component="li"
+                  {...item}
+                  onClick={() => handlePageChange(item.page)}
+                />
+              )}
             />
-          )}
-        />
-      </Box>
+          </Box>
+        </>
+      )}
     </>
   );
 };

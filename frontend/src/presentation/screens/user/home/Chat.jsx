@@ -7,6 +7,7 @@ import {
   Grid,
   Paper,
   LinearProgress,
+  CircularProgress,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { Container } from "@mui/system";
@@ -85,7 +86,16 @@ const ChatUI = () => {
       }}
     >
       {isLoading ? (
-        <LinearProgress />
+          <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CircularProgress style={{ color: "#6e43a3" }} />
+        </div>
       ) : (
         <>
           {scrollToBottom()}

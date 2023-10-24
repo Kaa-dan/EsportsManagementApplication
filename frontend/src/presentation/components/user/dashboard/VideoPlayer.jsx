@@ -1,14 +1,14 @@
 
 import ReactPlayer from 'react-player';
 
-const VideoPlayer = ({ videoUrl }) => {
+const VideoPlayer = ({ videoUrl,h }) => {
   return (
     <div>
       <ReactPlayer
-        url={videoUrl} // Provide the URL of the video you want to play
+        url={videoUrl} 
         width="100%"
-        height="100%"
-        controls // Show video controls (play, pause, volume, etc.)
+        height={h?`${h}vh`:"100%"}
+        controls 
       />
     </div>
   );

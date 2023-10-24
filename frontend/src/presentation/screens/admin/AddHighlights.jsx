@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import VideoPlayer from "../../components/user/dashboard/VideoPlayer";
 import dyncamicToast from "../../components/user/form/DynamicToast";
 import CustomPagination from "../../components/user/dashboard/Pagination";
+import { useSelector } from "react-redux";
 const style = {
   position: "absolute",
   top: "50%",
@@ -50,9 +51,10 @@ const style = {
 const head = ["Highlight Video", "Discription", "Delete"];
 
 const AddHighlights = () => {
+  const { user } = useSelector((state) => state.auth);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(4);
+  const [rowsPerPage, setRowsPerPage] = useState(3);
   const [open, setOpen] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState("");
   const [videoUrl, setVideoUrl] = useState(null);
@@ -86,7 +88,7 @@ const AddHighlights = () => {
   const deleteHighlightHandler = async (id) => {
     try {
       const responce = await deleteHighlightApi({ id });
-      getHighlightHandler()
+      getHighlightHandler();
       dyncamicToast(responce?.data?.message);
     } catch (error) {
       dyncamicToast(error.message);
@@ -97,7 +99,6 @@ const AddHighlights = () => {
       const responce = await getHighlightApi({ query });
       console.log(responce);
       setHighlightData(responce.data.data);
-      
     } catch (error) {
       dyncamicToast(error?.message);
     }
@@ -112,6 +113,12 @@ const AddHighlights = () => {
   useEffect(() => {
     getHighlightHandler();
   }, [query]);
+  useEffect(() => {
+    if (!user) {
+      console.log("nithinra js");
+      navigate("/auth/login");
+    }
+  }, [user]);
   return (
     <>
       <Container sx={{ position: "relative", mt: 10, height: "73vh" }}>
@@ -199,32 +206,6 @@ const AddHighlights = () => {
             </Table>
           </TableContainer>
         </Paper>
-        {/* <Grid container spacing={3} direction="row" >
-            {highlightData.map((data) => {
-              return (
-                <Grid key={data._id} item>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <VideoPlayer videoUrl={data?.video} />
-                    
-                    <Typography component="span" sx={{ fontSize: "12px" }}>
-                      {new Date(data?.timestamp).toLocaleDateString()}
-                    </Typography>
-                    <Typography
-                      sx={{
-                       
-                        borderRadius: "5px",
-
-                      }}
-                      gutterBottom
-                    >
-                      {data?.discription}
-                    </Typography>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid> */}
-        {/* </Box> */}
       </Container>
       <Box>
         <CustomPagination

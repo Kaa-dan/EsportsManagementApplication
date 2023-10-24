@@ -29,8 +29,10 @@ function GoogleButton() {
         if (response.data.role === "admin") {
           // Navigate to the home page
           navigate("/fans");
+        } else if (response.data.role === "fan") {
+          navigate("/live-corner");
         } else {
-          navigate("/");
+          navigate("/live-corner");
         }
       }
     } catch (error) {

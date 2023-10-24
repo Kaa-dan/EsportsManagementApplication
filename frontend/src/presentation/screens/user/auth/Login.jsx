@@ -3,7 +3,13 @@ import TextFieldWrapper from "../../../components/user/form/Textfield";
 import ButtonWrapper from "../../../components/user/form/Button";
 import GoogleButton from "../../../components/user/auth/GoogleButton";
 // importing mui components
-import { Grid, Typography, Container, Stack, CircularProgress } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
 // importing from redux store
 import { useLoginMutation } from "../../../../application/slice/user/authApiSlice";
 import { setCredentials } from "../../../../application/slice/user/authSlice";
@@ -51,15 +57,14 @@ const Login = () => {
 
       if (res.data.role === "admin") {
         navigate("/fans");
-
-        console.log(res.data.role);
+      } else if (res.data.role === "fan") {
+        navigate("/live-corner");
       } else {
-        console.log("user");
-        navigate("/");
+        navigate("/live-corner");
       }
       toast(message);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast(err?.data?.error);
     }
   };

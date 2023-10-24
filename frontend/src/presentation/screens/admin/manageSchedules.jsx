@@ -17,7 +17,7 @@ import {
   Container,
   LinearProgress,
 } from "@mui/material";
-
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import dyncamicToast from "../../components/user/form/DynamicToast";
 import React, { useEffect, useState } from "react";
 import Calender from "react-calendar";
@@ -47,15 +47,8 @@ const style = {
   p: 4,
 };
 
-const events = ["10-10-2023", "10-11-2023", "10-12-2023"];
-
 const manageSchedules = () => {
-  const [showDate, setShowDate] = useState([
-    "10-9-2023",
-    "10-10-2023",
-    "10-12-2023",
-    "10-01-2023",
-  ]);
+  const [dateFilter, setDateFilter] = useState(null);
   const [open, setOpen] = useState(false);
   const [scheduleData, setScheduleData] = useState([]);
   const [scheduleType, setSheduleType] = useState("");
@@ -106,7 +99,7 @@ const manageSchedules = () => {
   };
   const getScheduledData = async () => {
     try {
-      let response = await getScheduleApi({ filter });
+      let response = await getScheduleApi({ filter, dateFilter });
       console.log(response);
       setScheduleData(response.data.data);
     } catch (error) {
@@ -138,7 +131,7 @@ const manageSchedules = () => {
   useEffect(() => {
     getScheduledData();
     getTeamHandler();
-  }, [filter]);
+  }, [filter, dateFilter]);
 
   return (
     <>
@@ -177,12 +170,20 @@ const manageSchedules = () => {
               sx={{ display: "flex", justifyContent: "center" }}
             >
               <Calender
-                tileContent={({ activeStartDate, date, view }) =>
-                  view === "month" && date.getDay() === 0 ? (
-                    <p>It's Sunday!</p>
-                  ) : null
-                }
-                tileClassName={({ activeStartDate, date, view }) => view === 'month' && date.getDay() === 3 ? 'wednesday' : null}
+                tileContent={({ activeStartDate, date, view }) => {
+                  const contents = scheduleData.map((value, index) => {
+                    if (
+                      new Date(value.date).toLocaleDateString() ===
+                      new Date(date).toLocaleDateString()
+                    ) {
+                      return <span key={index}>✅</span>;
+                    }
+                    return null;
+                  });
+
+                  return <>{contents}</>;
+                }}
+                onChange={(v) => setDateFilter(v)}
               />
             </Grid>
             <Grid sx={{ height: "450px" }} item lg={4}>
@@ -207,6 +208,13 @@ const manageSchedules = () => {
                         color: "primary.main",
                       }}
                     >
+                      <AutorenewIcon
+                        onClick={() => {
+                          setFilter("all");
+                          setDateFilter(null);
+                        }}
+                        sx={{ color: "white" }}
+                      />
                       Schedules
                     </Typography>
                   </Box>
@@ -220,7 +228,6 @@ const manageSchedules = () => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={filter}
-                        label="Age"
                         onChange={(e) => setFilter(e.target.value)}
                       >
                         <MenuItem value="all">all</MenuItem>
@@ -487,14 +494,11 @@ const manageSchedules = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <TimePicker
                     // value={editSchedule.time}
-                    value={new Date(editSchedule.time).toString()}
-                    onChange={
-                      (newTime) => {
-                        console.log(editSchedule.time);
-                        setEditSchedule({ ...editSchedule, time: newTime });
-                      }
-                      // setEditSchedule({ ...editSchedule, time: e })
-                    }
+                    value={new Date(editSchedule.time).toLocaleTimeString()}
+                    onChange={(newTime) => {
+                      console.log(editSchedule?.time);
+                      setEditSchedule({ ...editSchedule, time: newTime });
+                    }}
                     label="time"
                   />
                 </LocalizationProvider>

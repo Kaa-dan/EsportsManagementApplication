@@ -19,13 +19,12 @@ import MuiDrawer from "@mui/material/Drawer";
 import { useLocation } from "react-router-dom";
 
 // mui icons
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+
 import LiveTvIcon from "@mui/icons-material/LiveTv";
-import Diversity1Icon from "@mui/icons-material/Diversity1";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+
 import LogoutIcon from "@mui/icons-material/Logout";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import Person4Icon from "@mui/icons-material/Person4";
+
 import MenuOpenTwoToneIcon from "@mui/icons-material/MenuOpenTwoTone";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -43,6 +42,7 @@ import Notification from "../../../screens/user/home/Notification";
 import LiveCorner from "../../../screens/user/home/LiveCorner";
 import ChatUI from "../../../screens/user/home/Chat";
 import PlayerView from "../../../screens/user/home/PlayerView";
+import SchedulesUser from "../../../screens/user/home/SchedulesUser";
 // custom player component
 import LiveSetup from "../../../screens/player/LiveSetup";
 import Live from "../../../screens/player/Live";
@@ -146,6 +146,12 @@ const SideBar = ({ open, setOpen }) => {
           component: <LiveCorner />,
         },
         {
+          title: "Team",
+          icon: <Diversity2Icon />,
+          link: "player-view",
+          component: <PlayerView />,
+        },
+        {
           title: "Notification",
           icon: <MarkEmailUnreadIcon />,
           link: "notification",
@@ -157,12 +163,11 @@ const SideBar = ({ open, setOpen }) => {
           link: "chat",
           component: <ChatUI />,
         },
-        ,
         {
-          title: "Team",
-          icon: <Diversity2Icon />,
-          link: "player-view",
-          component: <PlayerView />,
+          title: "Schedules",
+          icon: <DateRangeIcon />,
+          link: "schedule-user",
+          component: <SchedulesUser />,
         },
       ]);
     } else if (user.role === "admin") {
@@ -209,34 +214,36 @@ const SideBar = ({ open, setOpen }) => {
       list = useMemo(() => [
         {
           title: "Livecorner",
-          icon: <LiveTvIcon />,
-          link: "go-live",
-          component: <LiveSetup />,
+          icon: <DuoIcon />,
+          link: "live-corner",
+          component: <LiveCorner />,
         },
+        {
+          title: "Schedules",
+          icon: <DateRangeIcon />,
+          link: "schedule-user",
+          component: <SchedulesUser />,
+        },
+
         {
           title: "Chat",
           icon: <ChatIcon />,
           link: "chat",
           component: <ChatUI />,
         },
-        ,
-        {
-          title: "Notification",
-          icon: <MarkEmailUnreadIcon />,
-          link: "notification",
-          component: <Notification />,
-        },
+
         {
           title: "Team",
           icon: <Diversity2Icon />,
           link: "player-view",
           component: <PlayerView />,
         },
+
         {
-          title: "Livecorner",
-          icon: <DuoIcon />,
-          link: "live-corner",
-          component: <LiveCorner />,
+          title: "GoLive",
+          icon: <LiveTvIcon />,
+          link: "go-live",
+          component: <LiveSetup />,
         },
       ]);
     }
@@ -254,10 +261,10 @@ const SideBar = ({ open, setOpen }) => {
 
   useEffect(() => {
     if (!user) {
-      console.log(user);
+      console.log("nithinra js")
       navigate("/auth/login");
     }
-  }, [user]);
+  },[]);
 
   return (
     <>
@@ -287,7 +294,7 @@ const SideBar = ({ open, setOpen }) => {
           <Tooltip>
             <Avatar
               onClick={profileOpenHandler}
-              src={user.profilePhoto}
+              src={user?.profilePhoto}
               {...(open && { sx: { width: 100, height: 100 } })}
             />
           </Tooltip>
@@ -391,13 +398,13 @@ const SideBar = ({ open, setOpen }) => {
           position: "relative",
           backgroundColor: "rgba(51, 14, 98, 0.4)",
           height: "80vh",
-          mt:14
+          mt: 14,
         }}
       >
         {/* Rendering components based on routes */}
         <Routes>
           {list.map((item) => (
-            <Route key={item.link} path={item.link} element={item.component} />
+            <Route key={item?.link} path={item?.link} element={item?.component} />
           ))}
           <Route path={"/stream"} element={<Live />} />
         </Routes>
