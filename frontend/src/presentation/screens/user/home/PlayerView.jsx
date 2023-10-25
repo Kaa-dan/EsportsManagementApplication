@@ -83,18 +83,7 @@ const PlayerView = () => {
 
   return (
     <>
-      {isLoading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <CircularProgress style={{ color: "#6e43a3" }} />
-        </div>
-      ) : (
+       
         <>
           {" "}
           <div>
@@ -140,48 +129,62 @@ const PlayerView = () => {
                 </Grid>
               </Grid>
             </Box>
-            <Grid spacing={2} container>
-              {playerData.map((data) => (
-                <Grid item>
-                  <Card sx={{ display: "flex", width: 350, height: 200 }}>
-                    <CardContent sx={{ flex: "1 0 auto" }}>
-                      <Stack spacing={1}>
-                        <Typography component="div" variant="h5">
-                          {data?.teamData[0]?.team}
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          component="div"
-                        >
-                          {data?.userData[0]?.name}
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          component="div"
-                        >
-                          role: {data?.role}
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          component="div"
-                        >
-                          salary:{data?.salary}$
-                        </Typography>
-                      </Stack>
-                    </CardContent>
 
-                    <CardMedia
-                      component="img"
-                      sx={{ width: 120 }}
-                      image={data?.userData[0]?.profilePhoto}
-                    />
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+            {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <CircularProgress style={{ color: "#6e43a3" }} />
+              </div>
+            ) : (
+              <Grid spacing={2} container>
+                {playerData.map((data) => (
+                  <Grid item>
+                    <Card sx={{ display: "flex", width: 350, height: 200 }}>
+                      <CardContent sx={{ flex: "1 0 auto" }}>
+                        <Stack spacing={1}>
+                          <Typography component="div" variant="h5">
+                            {data?.teamData[0]?.team}
+                          </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            color="text.secondary"
+                            component="div"
+                          >
+                            {data?.userData[0]?.name}
+                          </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            color="text.secondary"
+                            component="div"
+                          >
+                            role: {data?.role}
+                          </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            color="text.secondary"
+                            component="div"
+                          >
+                            salary:{data?.salary}$
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+
+                      <CardMedia
+                        component="img"
+                        sx={{ width: 120 }}
+                        image={data?.userData[0]?.profilePhoto}
+                      />
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
           </div>
           <Box sx={{ position: "fixed", mt: 25 }}>
             <Pagination
@@ -201,7 +204,7 @@ const PlayerView = () => {
             />
           </Box>
         </>
-      )}
+      
     </>
   );
 };
